@@ -1,4 +1,6 @@
 .vs/
+source/GBR/x64
+source/x64
 source/Debug
 source/Release
 source/GBR/Debug
