@@ -1,0 +1,10 @@
+.vs/
+source/Debug
+source/Release
+source/GBR/Debug
+source/GBR/Release
+source/GBR/roms
+*.vcxproj
+*.filters
+*.user
+GBR.sln
