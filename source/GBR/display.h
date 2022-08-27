@@ -4,6 +4,7 @@
 #include "types.h"
 
 #include <functional>
+#include <vector>
 
 class CPU;
 class Display final
@@ -25,9 +26,16 @@ public:
 private:
 	void performDMATransfer(const byte b);
 	void renderScanline();
+	void renderBackgroundScanline();
+	void renderWindowScanline();
+	void renderOBJsScanline();
+	void searchOBJSInCurrentScanline();
 
 private:
 	byte finalSDLPixels_[160 * 144 * 4];
+	byte bgAndWindowColorIndices[160 * 144];
+	byte spriteColorIndices[160 * 144];
+	std::vector<word> selectedOBJAddressesForCurrentScanline_;
 	CPU* cpu_;
 	byte* mem_;
 	VBlankCallback cb_;

@@ -3,6 +3,7 @@
 #include "cpu.h"
 #include "logging.h"
 
+#include <cassert>
 #include <iomanip>
 #include <sstream>
 #include <stdio.h>
@@ -118,6 +119,9 @@ unsigned int CPU::executeNextInstruction()
 	{
 		// noop
 		case 0x00: break;
+
+		// stop
+		case 0x10: isHalted_ = true; break;
 
 		// 8-bit Loads
 		case 0x06: setRegByte(REG_B_INDEX, readByteAtPC()); break;		

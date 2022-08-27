@@ -31,7 +31,8 @@ byte Joypad::readByteAt(const word) const
 
 void Joypad::writeByteAt(const word, const byte b)
 {
-	joypadRegister_ = joypadRegister_ | (b & 0x30); // only bits 4 & 5 are r/w
+	joypadRegister_ &= (~0x30);
+	joypadRegister_ |= (b & 0x30); // only bits 4 & 5 are r/w
 
 	// If action buttons are selected by resetting bit 5
 	if (!(IS_BIT_SET(5, joypadRegister_)))
@@ -39,7 +40,7 @@ void Joypad::writeByteAt(const word, const byte b)
 		// The bottom 4 bits of the register become the inverse of the last action state mask.
 		// (The inverse because we send in a mask indicating 1 for presses, and the gameboy
 		// reads 1 as unpressed).
-		joypadRegister_ = (joypadRegister_ & 0xF0) | ((~lastDirectionButtonsState_) & 0x0F);
+		joypadRegister_ = (joypadRegister_ & 0xF0) | ((~lastActionButtonsState_) & 0x0F);
 		
 		// Also if in the final bottom 4-bits state there is at least one (enabled) button that is pressed at this point, 
 		// (i.e. we have at least one 0 in the 4 bottom bits) Request a Joypad interrupt.

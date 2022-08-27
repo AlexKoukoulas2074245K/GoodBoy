@@ -203,7 +203,7 @@ int main(int argc, char** argv)
     
     std::string cartridgeName;
     if (argc == 1)
-        cartridgeName = dmgSystem.loadCartridge("roms/individual/02-interrupts.gb");
+        cartridgeName = dmgSystem.loadCartridge("roms/tetris.gb");
     else
         cartridgeName = dmgSystem.loadCartridge(argv[argc - 1]);
 
@@ -236,8 +236,6 @@ int main(int argc, char** argv)
         }
 
         cpuClockCycles -= CPU_CLOCK_CYCLES_PER_FRAME;
-
-        //VSyncCallback();
 
         Uint64 frameEnd = SDL_GetPerformanceCounter();
         // Loop until we use up the rest of our frame time

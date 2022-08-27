@@ -3,14 +3,32 @@
 #include "cartridge.h"
 #include "logging.h"
 
+#include <cassert>
 #include <stdio.h>
 
 static constexpr word CARTRIDGE_TITLE_LENGTH  = 0x10;
 static constexpr word CARTRIDGE_TITLE_ADDRESS = 0x0134;
 static constexpr word CARTRIDGE_TYPE_ADDRESS  = 0x0147;
+static constexpr word CARTRIDGE_ROM_SIZE_ADDRESS = 0x0148;
+static constexpr word CARTRIDGE_RAM_SIZE_ADDRESS = 0x0149;
+
+static const std::string CARTRIDGE_TYPE_NAMES[] =
+{
+	"(ROM ONLY)", "(MBC1)", "(MBC1 + RAM)", "(MBC1+RAM+BATTERY)"
+};
+
+static const word CARTRIDGE_RAM_SIZES[] =
+{
+	0, 0, 8, 32, 128, 64
+};
 
 Cartridge::Cartridge()
 	: cartridgeRom_(nullptr)
+	, cartridgeName_()
+	, cartridgeType_(CartridgeType::UNSUPPORTED)
+	, cartridgeROMSizeInKB_(0)
+	, cartridgeRAMSizeInKB_(0)
+	, romBankNumberRegister_(0x1)
 {
 }
 
@@ -35,48 +53,24 @@ std::string Cartridge::loadCartridge(const char* filename)
 	fread(cartridgeRom_, sizeof(byte), size, file);
 	
 	std::string cartridgeName(&cartridgeRom_[CARTRIDGE_TITLE_ADDRESS], &cartridgeRom_[CARTRIDGE_TITLE_ADDRESS] + CARTRIDGE_TITLE_LENGTH);
-	for (int i = 0; i < cartridgeName.length(); ++i)
+	for (unsigned int i = 0U; i < cartridgeName.length(); ++i)
 	{
 		if (cartridgeName[i] == '\0') break;
 		cartridgeName_ += cartridgeName[i];
 	}
-	cartridgeType_ = cartridgeRom_[CARTRIDGE_TYPE_ADDRESS];
 
-	switch (cartridgeType_)
+	byte type = cartridgeRom_[CARTRIDGE_TYPE_ADDRESS];
+	if (type >= static_cast<byte>(CartridgeType::UNSUPPORTED))
 	{
-		case 0x00: cartridgeName_ += " (ROM ONLY)"; break;
-		case 0x01: cartridgeName_ += " (MBC1)"; break;
-		case 0x02: cartridgeName_ += " (MBC1+RAM)"; break;
-		case 0x03: cartridgeName_ += " (MBC1+RAM+BATTERY)"; break;
-		case 0x05: cartridgeName_ += " (MBC2)"; break;
-		case 0x06: cartridgeName_ += " (MBC2+BATTERY)"; break;
-		case 0x08: cartridgeName_ += " (ROM+RAM)"; break;
-		case 0x09: cartridgeName_ += " (ROM+RAM+BATTERY)"; break;
-		case 0x0B: cartridgeName_ += " (MMM01)"; break;
-		case 0x0C: cartridgeName_ += " (MMM01+RAM)"; break;
-		case 0x0D: cartridgeName_ += " (MMM01+RAM+BATTERY)"; break;
-		case 0x0F: cartridgeName_ += " (MBC3+TIMER+BATTERY)"; break;
-		case 0x10: cartridgeName_ += " (MBC3+TIMER+RAM+BATTERY)"; break;
-		case 0x11: cartridgeName_ += " (MBC3)"; break;
-		case 0x12: cartridgeName_ += " (MBC3+RAM)"; break;
-		case 0x13: cartridgeName_ += " (MBC3+RAM+BATTERY)"; break;
-		case 0x19: cartridgeName_ += " (MBC5)"; break;
-		case 0x1A: cartridgeName_ += " (MBC5+RAM)"; break;
-		case 0x1B: cartridgeName_ += " (MBC5+RAM+BATTERY)"; break;
-		case 0x1C: cartridgeName_ += " (MBC5+RUMBLE)"; break;
-		case 0x1D: cartridgeName_ += " (MBC5+RUMBLE+RAM)"; break;
-		case 0x1E: cartridgeName_ += " (MBC5+RUMBLE+RAM+BATTERY)"; break;
-		case 0x20: cartridgeName_ += " (MBC6)"; break;
-		case 0x22: cartridgeName_ += " (MBC7+SENSOR+RUMBLE+RAM+BATTERY)"; break;
-		case 0xFC: cartridgeName_ += " (POCKET CAMERA)"; break;
-		case 0xFD: cartridgeName_ += " (BANDAI TAMA5)"; break;
-		case 0xFE: cartridgeName_ += " (HuC3)"; break;
-		case 0xFF: cartridgeName_ += " (HuC1+RAM+BATTERY)"; break;
-		default:
-			log(LogType::WARNING, "Unknown cartridge type");
+		return " UNSUPPORTED";
 	}
 
-	return cartridgeName_;
+	cartridgeType_ = static_cast<CartridgeType>(type);
+	cartridgeName_ = CARTRIDGE_TYPE_NAMES[type];
+	cartridgeROMSizeInKB_ = 32 * (1 << cartridgeRom_[CARTRIDGE_ROM_SIZE_ADDRESS]);
+	cartridgeRAMSizeInKB_ = CARTRIDGE_RAM_SIZES[cartridgeRom_[CARTRIDGE_RAM_SIZE_ADDRESS]];
+
+	return " " + cartridgeName_;
 }
 
 void Cartridge::unloadCartridge()
@@ -86,11 +80,58 @@ void Cartridge::unloadCartridge()
 
 byte Cartridge::readByteAt(const word address) const
 {
-	return cartridgeRom_[address];
+	switch (cartridgeType_)
+	{
+		case CartridgeType::ROM_ONLY:
+		{
+			return cartridgeRom_[address];
+		} break;
+
+		case CartridgeType::MBC1:
+		{
+			if (address <= 0x3FFF)
+			{
+				return cartridgeRom_[address];
+			}
+			else
+			{
+				return cartridgeRom_[(address - 0x4000) + (romBankNumberRegister_ * 0x4000)];
+			}
+		}
+	}
+	return 0xFF;
 }
 
 void Cartridge::writeByteAt(const word address, const byte b)
 {
-	log(LogType::WARNING, "Writing at rom address %s byte %s", getHexWord(address).c_str(), getHexByte(b).c_str());
-	cartridgeRom_[address] = b;
+	switch (cartridgeType_)
+	{
+		case CartridgeType::ROM_ONLY:
+		{
+			log(LogType::WARNING, "Writing at rom address %s byte %s", getHexWord(address).c_str(), getHexByte(b).c_str());
+		} break;
+
+		case CartridgeType::MBC1:
+		{
+			if (address <= 0x1FFF)
+			{
+				log(LogType::WARNING, "RAM ENABLE written on an MBC1 with 0 RAM", getHexWord(address).c_str(), getHexByte(b).c_str());
+			}
+			else if (address <= 0x3FFF)
+			{
+				// This 5 - bit register (range $01 - $1F) selects the ROM bank number for the 4000 - 7FFF region.
+				// Higher bits are discarded.
+				romBankNumberRegister_ = b & 0x1F;
+				
+				assert(romBankNumberRegister_ * 16 < cartridgeROMSizeInKB_);
+
+				// If this register is set to 0x00, it behaves as if it is set to 0x01
+				if ((b & 0x1F)== 0x0) romBankNumberRegister_ = 0x1;
+			}
+			else
+			{
+				log(LogType::WARNING, "Unhandled rom write address %s byte %s", getHexWord(address).c_str(), getHexByte(b).c_str());
+			}
+		} break;
+	}
 }

@@ -3,11 +3,14 @@
 #include "logging.h"
 #include "memory.h"
 
+#include <algorithm>
 #include <cassert>
 
 #define GET_DISPLAY_MODE() (lcdStatus_ & 0x03)
 #define SET_DISPLAY_MODE(mode) lcdStatus_ = (lcdStatus_ & 0xFC) | mode
 #define IS_BIT_SET(bit, reg) (((reg >> bit) & 0x1) == 0x1)
+#define SET_BIT(bit, reg) reg |= (1 << bit)
+#define RESET_BIT(bit, reg) reg &= (~(1 << bit))
 
 static constexpr unsigned int SCANLINE_DOTS            = 456;
 static constexpr unsigned int HBLANK_DOTS              = 204; 
@@ -186,10 +189,20 @@ void Display::update(const unsigned int spentCpuCycles)
 				{				
 					SET_DISPLAY_MODE(DISPLAY_MODE_VBLANK);
 					cpu_->triggerInterrupt(CPU::VBLANK_INTERRUPT_BIT);
+
+					if (IS_BIT_SET(4, lcdStatus_))
+					{
+						cpu_->triggerInterrupt(CPU::LCD_STAT_INTERRUPT_BIT);
+					}
 				}
 				else
 				{					
 					SET_DISPLAY_MODE(DISPLAY_MODE_SEARCHING_OAM);
+
+					if (IS_BIT_SET(5, lcdStatus_))
+					{
+						cpu_->triggerInterrupt(CPU::LCD_STAT_INTERRUPT_BIT);
+					}
 				}
 			}
 		} break;
@@ -206,7 +219,16 @@ void Display::update(const unsigned int spentCpuCycles)
 			{
 				ly_ = 0;				
 				cb_(finalSDLPixels_);
+				
+				memset(bgAndWindowColorIndices, 0, sizeof(bgAndWindowColorIndices));
+				memset(spriteColorIndices, 0, sizeof(spriteColorIndices));
+
 				SET_DISPLAY_MODE(DISPLAY_MODE_SEARCHING_OAM);
+
+				if (IS_BIT_SET(5, lcdStatus_))
+				{
+					cpu_->triggerInterrupt(CPU::LCD_STAT_INTERRUPT_BIT);
+				}
 
 				if (totalFrameClock_ != TOTAL_PER_FRAME_DOTS)
 				{
@@ -222,6 +244,7 @@ void Display::update(const unsigned int spentCpuCycles)
 		{
 			if (clock_ >= SEARCHING_OAM_DOTS)
 			{				
+				searchOBJSInCurrentScanline();
 				clock_ -= SEARCHING_OAM_DOTS;
 				SET_DISPLAY_MODE(DISPLAY_MODE_TRANSFERRING_TO_LCD);
 			}
@@ -233,13 +256,26 @@ void Display::update(const unsigned int spentCpuCycles)
 			{				
 				clock_ -= TRANSFERRING_TO_LCD_DOTS;
 				SET_DISPLAY_MODE(DISPLAY_MODE_HBLANK);
+
+				if (IS_BIT_SET(3, lcdStatus_))
+				{
+					cpu_->triggerInterrupt(CPU::LCD_STAT_INTERRUPT_BIT);
+				}
 			}
 		} break;
 	}
 
 	if (ly_ == lyc_)
 	{
-		// LCD Interrupt
+		SET_BIT(2, lcdStatus_);
+		if (IS_BIT_SET(6, lcdStatus_))
+		{
+			cpu_->triggerInterrupt(CPU::LCD_STAT_INTERRUPT_BIT);
+		}
+	}
+	else
+	{
+		RESET_BIT(2, lcdStatus_);
 	}
 }
 
@@ -343,12 +379,31 @@ void Display::renderScanline()
 			finalSDLPixels_[i + 3] = GAMEBOY_NATIVE_COLORS[0][3];
 		}
 	}
-	
+	else
+	{
+		renderBackgroundScanline();
+
+		// Only draw window if it's specifically enabled by bit 5
+		if (IS_BIT_SET(5, lcdControl_))
+		{
+			renderWindowScanline();
+		}
+	}
+
+	// Only draw OBJs if they are specifically enabled by bit 1
+	if (IS_BIT_SET(1, lcdControl_))
+	{
+		renderOBJsScanline();
+	}	
+}
+
+void Display::renderBackgroundScanline()
+{
 	// Render BG
-	word startingBgMapAddress               = !IS_BIT_SET(3, lcdControl_) ? 0x9800 : 0x9C00;
-	word startingWindowMapAddress           = !IS_BIT_SET(6, lcdControl_) ? 0x9800 : 0x9C00;
+	word startingBgMapAddress = !IS_BIT_SET(3, lcdControl_) ? 0x9800 : 0x9C00;
+	word startingWindowMapAddress = !IS_BIT_SET(6, lcdControl_) ? 0x9800 : 0x9C00;
 	word startingBgAndWindowTileDataAddress = !IS_BIT_SET(4, lcdControl_) ? 0x9000 : 0x8000;
-	bool signedTileAddressing               = !IS_BIT_SET(4, lcdControl_);
+	bool signedTileAddressing = !IS_BIT_SET(4, lcdControl_);
 
 	// Assemble current palette. i.e. assign gray shades to the color indexes for bg and window tiles
 	byte palette[4] =
@@ -359,27 +414,23 @@ void Display::renderScanline()
 		static_cast<byte>((bgPalette_ & 0xC0) >> 6)
 	};
 
-	std::stringstream s;
 	for (int i = 0; i < 160; ++i)
 	{
-		if (i == 32 && scy_ == 0x4F)
-			const auto b = false;
-
 		word wrappedPixelXCoord = ((scx_ + i) % 0x100);   // Makes sure X coord is in the [0-255] range after accounting for scrolling
 		word wrappedPixelYCoord = ((scy_ + ly_) % 0x100); // Makes sure Y coord is in the [0-255] range after accounting for scrolling
 
 		word bgXCoord = wrappedPixelXCoord >> 3;                                   // Transforms X coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
 		word bgYCoord = wrappedPixelYCoord >> 3;                                   // Transforms Y coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
-		
+
 		word tileId = mem_[startingBgMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
 		word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;       // Find tile address based on Tile ID. Each tile data occupies 16 bytes
-		
+
 		if (signedTileAddressing)
 			tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sword>(tileId));
 
 		byte tileCol = wrappedPixelXCoord % 8; // Get tile data col to draw
 		byte tileRow = wrappedPixelYCoord % 8; // Get tile data row to draw
-		
+
 		word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
 		byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
 		byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
@@ -389,10 +440,149 @@ void Display::renderScanline()
 
 		byte colorIndex = colorIndexMSB << 1 | colorIndexLSB; // Assemble final color index
 
+		bgAndWindowColorIndices[ly_ * 160 + i] = palette[colorIndex];
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][0];
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][1];
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][2];
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][3];
+
 	}
-	//log(LogType::INFO, s.str().c_str());
+}
+
+void Display::renderWindowScanline()
+{
+
+}
+
+void Display::renderOBJsScanline()
+{
+	word startingOBJTileDataAddress = 0x8000;
+	bool xlSprites = IS_BIT_SET(2, lcdControl_);
+
+	// Assemble current palette for OBJs. Bottom 2 bits are ignored because color index 0 is transparent for OBJs
+	byte obj0palette[4] =
+	{
+		0,
+		static_cast<byte>((obj0Palette_ & 0x0C) >> 2),
+		static_cast<byte>((obj0Palette_ & 0x30) >> 4),
+		static_cast<byte>((obj0Palette_ & 0xC0) >> 6)
+	};
+
+	// Assemble current palette for OBJs. Bottom 2 bits are ignored because color index 0 is transparent for OBJs
+	byte obj1palette[4] =
+	{
+		0,
+		static_cast<byte>((obj1Palette_ & 0x0C) >> 2),
+		static_cast<byte>((obj1Palette_ & 0x30) >> 4),
+		static_cast<byte>((obj1Palette_ & 0xC0) >> 6)
+	};
+
+	for (word objAddress : selectedOBJAddressesForCurrentScanline_)
+	{
+		byte objYPos      = mem_[objAddress + 0] - 16;
+		byte objXPos      = mem_[objAddress + 1] - 8;
+		byte objTileIndex = mem_[objAddress + 2];
+		byte objFlags     = mem_[objAddress + 3];
+
+		bool bgAndWindowOverObj = IS_BIT_SET(7, objFlags);
+		bool isHorFlipped       = IS_BIT_SET(5, objFlags);
+		bool isVerFlipped       = IS_BIT_SET(6, objFlags);
+		bool useObjPalette0     = !IS_BIT_SET(4, 0);
+
+		word tileAddress = startingOBJTileDataAddress + 16 * objTileIndex; // Find tile address based on Tile ID. Each tile data occupies 16 bytes
+
+		if (xlSprites && ly_ >= objYPos + 8) // If 8x16 and the scanline is in the bottom tile+
+			tileAddress += 16;
+
+		byte tileRow = isVerFlipped ? 8 - (ly_ % 8) : (ly_ % 8);
+
+		word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
+		byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
+		byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1]; // Get second byte of tile data row (most significant bits for the final color index)
+
+		for (int j = 0; j < 8; ++j)
+		{
+			byte colorIndexLSB = (targetTileDataFirstByte >> (7 - j)) & 0x01;  // Get target bit from first byte
+			byte colorIndexMSB = (targetTileDataSecondByte >> (7 - j)) & 0x01; // Get target bit from second byte
+
+			if (isHorFlipped)
+			{
+				colorIndexLSB = (targetTileDataFirstByte >> j) & 0x01;  // Get target bit from first byte
+				colorIndexMSB = (targetTileDataSecondByte >> j) & 0x01; // Get target bit from second byte
+			}
+
+			byte colorIndex = colorIndexMSB << 1 | colorIndexLSB; // Assemble final color index
+
+			byte pixelCoordY = ly_;
+			byte pixelCoordX = objXPos + j;
+
+			// If BG and Window over obj and the current written pixel color by BG/window is not transparent
+			// then this object is skipped
+			if (bgAndWindowOverObj && bgAndWindowColorIndices[pixelCoordY * 160 + pixelCoordX] != 0)
+			{
+				continue;
+			}
+
+			// Ignore transparent pixels
+			byte finalColorIndex = useObjPalette0 ? obj0palette[colorIndex] : obj1palette[colorIndex];
+			if (finalColorIndex == 0)
+			{
+				continue;
+			}
+
+			spriteColorIndices[pixelCoordY * 160 + pixelCoordX] = finalColorIndex;
+		}
+	}
+
+	// Copy over data from this scanline over to final pixels
+	for (int i = 0; i < 160; ++i)
+	{
+		byte colorIndex = spriteColorIndices[ly_ * 160 + i];
+		if (colorIndex != 0)
+		{
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = GAMEBOY_NATIVE_COLORS[colorIndex][0];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[colorIndex][1];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[colorIndex][2];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[colorIndex][3];
+		}
+	}
+}
+
+void Display::searchOBJSInCurrentScanline()
+{
+	selectedOBJAddressesForCurrentScanline_.clear();
+
+	bool xlSprites = IS_BIT_SET(2, lcdControl_);
+
+	// Scan all OAM memories 4-byte obj entries
+	for (word i = Memory::OAM_START_ADDRESS; i < Memory::OAM_END_ADDRESS; i += 4)
+	{
+		byte objYPos = mem_[i] - 16;
+
+		if (xlSprites) // 8x16 case
+		{
+			if (ly_ >= objYPos && ly_ < objYPos + 16) selectedOBJAddressesForCurrentScanline_.push_back(i);
+		}
+		else // 8x8 case
+		{
+			if (ly_ >= objYPos && ly_ < objYPos + 8) selectedOBJAddressesForCurrentScanline_.push_back(i);
+		}
+
+		if (selectedOBJAddressesForCurrentScanline_.size() == 10) break;
+	}
+	
+	// When opaque pixels from two different objects overlap, which pixel ends up being displayed is determined by another kind of priority: 
+	// the pixel belonging to the higher-priority object wins.
+	std::sort(selectedOBJAddressesForCurrentScanline_.begin(), selectedOBJAddressesForCurrentScanline_.end(), [&](const word& lhs, const word& rhs) 
+	{
+		byte lhsX = mem_[lhs + 1];
+		byte rhsX = mem_[rhs + 1];
+
+		if (lhsX == rhsX)
+			// When X coordinates are identical, the object located first in OAM has higher priority.
+			return false;
+		else
+			// The smaller the X coordinate, the higher the priority.			
+			return lhsX > rhsX;		
+	});
 }
