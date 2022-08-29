@@ -21,8 +21,9 @@ public:
 
 	byte readByteAt(const word address) const;
 	void writeByteAt(const word address, const byte b);
-	bool dmaTransferInProgress() const { return dmaClockCyclesRemaining_ > 0; };
-
+	bool dmaTransferInProgress() const { return dmaClockCyclesRemaining_ > 0; }
+	bool respectsIllegalReadWrites() const { return respectIllegalReadsWrites_;  }
+	
 private:
 	void performDMATransfer(const byte b);
 	void renderScanline();
@@ -52,6 +53,7 @@ private:
 	byte obj0Palette_;
 	byte obj1Palette_;
 	byte winx_, winy_;
+	bool respectIllegalReadsWrites_;
 };
 
 #endif

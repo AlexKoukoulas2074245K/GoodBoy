@@ -115,6 +115,8 @@ void Memory::writeAt(const word address, const byte b)
 		if (!(address >= HRAM_START_ADDRESS && address <= HRAM_END_ADDRESS))
 		{
 			log(LogType::WARNING, ("Writing: " + getHexByte(b) + " at " + getHexWord(address) + ". DMA is in progress and writes to anywhere but HRAM are ignored").c_str());
+			
+			if (display_.respectsIllegalReadWrites()) return;
 		}
 	}
 

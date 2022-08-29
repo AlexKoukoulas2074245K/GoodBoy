@@ -18,8 +18,7 @@ public:
 
 public:
 	CPU(Memory& mem);
-	~CPU();
-
+	
 	unsigned int executeNextInstruction();
 	unsigned int handleInterrupts();
 	

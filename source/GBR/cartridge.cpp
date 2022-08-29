@@ -66,7 +66,7 @@ std::string Cartridge::loadCartridge(const char* filename)
 	}
 
 	cartridgeType_ = static_cast<CartridgeType>(type);
-	cartridgeName_ = CARTRIDGE_TYPE_NAMES[type];
+	cartridgeName_ += " " + CARTRIDGE_TYPE_NAMES[type];
 	cartridgeROMSizeInKB_ = 32 * (1 << cartridgeRom_[CARTRIDGE_ROM_SIZE_ADDRESS]);
 	cartridgeRAMSizeInKB_ = CARTRIDGE_RAM_SIZES[cartridgeRom_[CARTRIDGE_RAM_SIZE_ADDRESS]];
 

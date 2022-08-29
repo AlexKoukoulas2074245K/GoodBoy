@@ -49,9 +49,6 @@ static byte cbInstructionClockCycles[256] =
 
 };
 
-FILE* f;
-std::stringstream s;
-
 #define SET_Z_FLAG() registersAF_ |= 0x80
 #define SET_N_FLAG() registersAF_ |= 0x40
 #define SET_H_FLAG() registersAF_ |= 0x20
@@ -93,18 +90,12 @@ CPU::CPU(Memory& mem)
 	memset(generalPurposeRegisters_, 0, sizeof(generalPurposeRegisters_));	
 }
 
-CPU::~CPU()
-{
-	/*f = fopen("out.txt", "w");
-	fprintf(f, s.str().c_str());*/
-}
-
 unsigned int CPU::executeNextInstruction()
 {
-	if (registersPC_ == 0x213) 
-	{
-		auto b = false;
-	}
+	//if (registersPC_ == 0xC2EB) 
+	//{
+	//	auto b = false;
+	//}
 
 	if (isHalted_)
 	{
@@ -114,7 +105,7 @@ unsigned int CPU::executeNextInstruction()
 	currentInstructionOperands_.clear();
 	byte opcode = readByteAtPC();
 	unsigned int clockCycles = coreInstructionClockCycles[opcode];
-
+	
 	switch (opcode)
 	{
 		// noop
@@ -264,16 +255,48 @@ unsigned int CPU::executeNextInstruction()
 		case 0xE6: andan(readByteAtPC()); break;
 
 		// JR cc,n
-		case 0x20: jrccn(!IS_Z_FLAG_SET(), readSByteAtPC()); break;
-		case 0x28: jrccn(IS_Z_FLAG_SET(), readSByteAtPC()); break;
-		case 0x30: jrccn(!IS_C_FLAG_SET(), readSByteAtPC()); break;
-		case 0x38: jrccn(IS_C_FLAG_SET(), readSByteAtPC()); break;
+		case 0x20: 
+		{
+			jrccn(!IS_Z_FLAG_SET(), readSByteAtPC());
+			if (IS_Z_FLAG_SET()) clockCycles -= 4;
+		} break;
+		case 0x28: 
+		{
+			jrccn(IS_Z_FLAG_SET(), readSByteAtPC());
+			if (!IS_Z_FLAG_SET()) clockCycles -= 4;
+		} break;
+		case 0x30:
+		{
+			jrccn(!IS_C_FLAG_SET(), readSByteAtPC());
+			if (IS_C_FLAG_SET()) clockCycles -= 4;
+		} break;
+		case 0x38: 
+		{
+			jrccn(IS_C_FLAG_SET(), readSByteAtPC());
+			if (!IS_C_FLAG_SET()) clockCycles -= 4;
+		} break;
 		
 		// RET CC
-		case 0xC0: if (!IS_Z_FLAG_SET()) ret();  break;
-		case 0xC8: if (IS_Z_FLAG_SET()) ret();  break;
-		case 0xD0: if (!IS_C_FLAG_SET()) ret(); break;
-		case 0xD8: if (IS_C_FLAG_SET()) ret(); break;
+		case 0xC0: 
+		{
+			if (!IS_Z_FLAG_SET()) ret();
+			if (IS_Z_FLAG_SET()) clockCycles -= 12;
+		} break;
+		case 0xC8:
+		{
+			if (IS_Z_FLAG_SET()) ret();
+			if (!IS_Z_FLAG_SET()) clockCycles -= 12;
+		} break;
+		case 0xD0:
+		{
+			if (!IS_C_FLAG_SET()) ret();
+			if (IS_C_FLAG_SET()) clockCycles -= 12;
+		} break;
+		case 0xD8:
+		{
+			if (IS_C_FLAG_SET()) ret();
+			if (!IS_C_FLAG_SET()) clockCycles -= 12;
+		} break;
 			
 		// INC n
 		case 0x3C: inca(); break;
@@ -409,10 +432,30 @@ unsigned int CPU::executeNextInstruction()
 		} break;
 
 		// CALL cc, nn
-		case 0xC4: { word newAddress = readWordAtPc(); if (!IS_Z_FLAG_SET()) callnn(newAddress); } break;
-		case 0xCC: { word newAddress = readWordAtPc(); if (IS_Z_FLAG_SET()) callnn(newAddress); } break;
-		case 0xD4: { word newAddress = readWordAtPc(); if (!IS_C_FLAG_SET()) callnn(newAddress); } break;
-		case 0xDC: { word newAddress = readWordAtPc(); if (IS_C_FLAG_SET()) callnn(newAddress); } break;
+		case 0xC4: 
+		{
+			word newAddress = readWordAtPc(); 
+			if (!IS_Z_FLAG_SET()) callnn(newAddress); 
+			else clockCycles -= 12;
+		} break;
+		case 0xCC: 
+		{
+			word newAddress = readWordAtPc();
+			if (IS_Z_FLAG_SET()) callnn(newAddress); 
+			else clockCycles -= 12;
+		} break;
+		case 0xD4: 
+		{
+			word newAddress = readWordAtPc();
+			if (!IS_C_FLAG_SET()) callnn(newAddress); 
+			else clockCycles -= 12;
+		} break;
+		case 0xDC: 
+		{
+			word newAddress = readWordAtPc();
+			if (IS_C_FLAG_SET()) callnn(newAddress); 
+			else clockCycles -= 12;
+		} break;
 
 		// PUSH nn
 		case 0xF5: pushaf(); break;
@@ -442,10 +485,26 @@ unsigned int CPU::executeNextInstruction()
 		case 0xE9: registersPC_ = getRegWord(REG_HL_INDEX); break;
 
 		// JP cc, nn
-		case 0xC2: jpccn(!IS_Z_FLAG_SET(), readWordAtPc()); break;
-		case 0xCA: jpccn(IS_Z_FLAG_SET(), readWordAtPc()); break;
-		case 0xD2: jpccn(!IS_C_FLAG_SET(), readWordAtPc()); break;
-		case 0xDA: jpccn(IS_C_FLAG_SET(), readWordAtPc()); break;
+		case 0xC2: 
+		{
+			jpccn(!IS_Z_FLAG_SET(), readWordAtPc());
+			if (IS_Z_FLAG_SET()) clockCycles -= 4;
+		} break;
+		case 0xCA:
+		{
+			jpccn(IS_Z_FLAG_SET(), readWordAtPc());
+			if (!IS_Z_FLAG_SET()) clockCycles -= 4;
+		} break;
+		case 0xD2:
+		{
+			jpccn(!IS_C_FLAG_SET(), readWordAtPc());
+			if (IS_C_FLAG_SET()) clockCycles -= 4;
+		} break;
+		case 0xDA: 
+		{
+			jpccn(IS_C_FLAG_SET(), readWordAtPc());
+			if (!IS_C_FLAG_SET()) clockCycles -= 4;
+		} break;
 
 		// RST n
 		case 0xC7: callnn(0x00);  break;
@@ -656,17 +715,6 @@ unsigned int CPU::executeNextInstruction()
 
 	if (shouldDumpState_)
 		printState();
-	
-	/*
-	s << getHexByte(opcode);
-	s << ": ";
-	s << getHexWord(registersPC_) << " ";
-	s << getHexWord(registersAF_) << " ";
-	s << getHexWord(getRegWord(REG_BC_INDEX)) << " ";
-	s << getHexWord(getRegWord(REG_DE_INDEX)) << " ";
-	s << getHexWord(getRegWord(REG_HL_INDEX)) << " ";
-	s << getHexWord(getRegWord(REG_SP_INDEX)) << "\n";
-	*/
 	return clockCycles;
 }
 

@@ -70,7 +70,7 @@ void Timer::update(const unsigned int spentCpuCycles)
 			case 0x03: timerAccumFreq = 256; break;
 		}
 
-		if (timerAccumRegisterCycleCounter_ >= timerAccumFreq)
+		while (timerAccumRegisterCycleCounter_ >= timerAccumFreq)
 		{
 			timerAccumRegisterCycleCounter_ -= timerAccumFreq;
 			timerAccumRegister_++;

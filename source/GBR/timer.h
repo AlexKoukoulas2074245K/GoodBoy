@@ -6,6 +6,7 @@
 class CPU;
 class Timer final
 {
+	friend class System;
 public:
 	Timer();
 

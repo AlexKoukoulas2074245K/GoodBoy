@@ -144,6 +144,7 @@ Display::Display()
 	, obj0Palette_(0)
 	, obj1Palette_(0)
 	, winx_(0), winy_(0)
+	, respectIllegalReadsWrites_(true)
 {
 	memset(finalSDLPixels_, 0xFF, sizeof(finalSDLPixels_));
 	SET_DISPLAY_MODE(DISPLAY_MODE_VBLANK);
@@ -286,7 +287,7 @@ byte Display::readByteAt(const word address) const
 		if (GET_DISPLAY_MODE() == DISPLAY_MODE_TRANSFERRING_TO_LCD)
 		{
 			log(LogType::WARNING, "Attempt to read from VRAM during LCD transfer. Returning garbage."); 
-			return 0xFF;
+			if (respectIllegalReadsWrites_) return 0xFF;
 		}
 		return mem_[address];
 	}
@@ -295,7 +296,7 @@ byte Display::readByteAt(const word address) const
 		if (GET_DISPLAY_MODE() == DISPLAY_MODE_SEARCHING_OAM || GET_DISPLAY_MODE() == DISPLAY_MODE_TRANSFERRING_TO_LCD)
 		{
 			log(LogType::WARNING, "Attempt to read from OAM during LCD transfer or searching phase. Returning garbage.");
-			return 0xFF;
+			if (respectIllegalReadsWrites_) return 0xFF;
 		}
 		return mem_[address];
 	}
@@ -326,7 +327,7 @@ void Display::writeByteAt(const word address, const byte b)
 		if (GET_DISPLAY_MODE() == DISPLAY_MODE_TRANSFERRING_TO_LCD)
 		{
 			log(LogType::WARNING, "Attempt to write to VRAM during LCD transfer. Ignoring write.");			
-			return;
+			if (respectIllegalReadsWrites_) return;
 		}
 		mem_[address] = b;
 		return;
@@ -336,7 +337,7 @@ void Display::writeByteAt(const word address, const byte b)
 		if (GET_DISPLAY_MODE() == DISPLAY_MODE_SEARCHING_OAM || GET_DISPLAY_MODE() == DISPLAY_MODE_TRANSFERRING_TO_LCD)
 		{
 			log(LogType::WARNING, "Attempt to write to OAM during LCD transfer or searching phase. Ignoring write.");			
-			return;
+			if (respectIllegalReadsWrites_) return;
 		}
 		mem_[address] = b;
 		return;
@@ -426,7 +427,7 @@ void Display::renderBackgroundScanline()
 		word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;       // Find tile address based on Tile ID. Each tile data occupies 16 bytes
 
 		if (signedTileAddressing)
-			tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sword>(tileId));
+			tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sbyte>(tileId));
 
 		byte tileCol = wrappedPixelXCoord % 8; // Get tile data col to draw
 		byte tileRow = wrappedPixelYCoord % 8; // Get tile data row to draw
@@ -494,7 +495,9 @@ void Display::renderOBJsScanline()
 		if (xlSprites && ly_ >= objYPos + 8) // If 8x16 and the scanline is in the bottom tile+
 			tileAddress += 16;
 
-		byte tileRow = isVerFlipped ? 8 - (ly_ % 8) : (ly_ % 8);
+		byte tileRow = (ly_ - objYPos) % 8;
+		if (isVerFlipped)
+			tileRow = 8 - ((ly_ - objYPos) % 8);
 
 		word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
 		byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
@@ -561,11 +564,13 @@ void Display::searchOBJSInCurrentScanline()
 
 		if (xlSprites) // 8x16 case
 		{
-			if (ly_ >= objYPos && ly_ < objYPos + 16) selectedOBJAddressesForCurrentScanline_.push_back(i);
+			if (ly_ >= objYPos && ly_ < objYPos + 16) 
+				selectedOBJAddressesForCurrentScanline_.push_back(i);
 		}
 		else // 8x8 case
 		{
-			if (ly_ >= objYPos && ly_ < objYPos + 8) selectedOBJAddressesForCurrentScanline_.push_back(i);
+			if (ly_ >= objYPos && ly_ < objYPos + 8) 
+				selectedOBJAddressesForCurrentScanline_.push_back(i);
 		}
 
 		if (selectedOBJAddressesForCurrentScanline_.size() == 10) break;
