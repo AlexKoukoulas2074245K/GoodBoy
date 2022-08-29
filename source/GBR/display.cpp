@@ -402,7 +402,6 @@ void Display::renderBackgroundScanline()
 {
 	// Render BG
 	word startingBgMapAddress = !IS_BIT_SET(3, lcdControl_) ? 0x9800 : 0x9C00;
-	word startingWindowMapAddress = !IS_BIT_SET(6, lcdControl_) ? 0x9800 : 0x9C00;
 	word startingBgAndWindowTileDataAddress = !IS_BIT_SET(4, lcdControl_) ? 0x9000 : 0x8000;
 	bool signedTileAddressing = !IS_BIT_SET(4, lcdControl_);
 
@@ -446,13 +445,58 @@ void Display::renderBackgroundScanline()
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][1];
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][2];
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][3];
-
 	}
 }
 
 void Display::renderWindowScanline()
 {
+	word startingWindowMapAddress = !IS_BIT_SET(6, lcdControl_) ? 0x9800 : 0x9C00;
+	word startingBgAndWindowTileDataAddress = !IS_BIT_SET(4, lcdControl_) ? 0x9000 : 0x8000;
+	bool signedTileAddressing = !IS_BIT_SET(4, lcdControl_);
 
+	// Assemble current palette. i.e. assign gray shades to the color indexes for bg and window tiles
+	byte palette[4] =
+	{
+		static_cast<byte>((bgPalette_ & 0x03) >> 0),
+		static_cast<byte>((bgPalette_ & 0x0C) >> 2),
+		static_cast<byte>((bgPalette_ & 0x30) >> 4),
+		static_cast<byte>((bgPalette_ & 0xC0) >> 6)
+	};
+
+	for (int i = 0; i < 160; ++i)
+	{
+		if (ly_ < winy_) return;
+		word wrappedPixelXCoord = (((winx_ - 7) + i) % 0x100);   // Makes sure X coord is in the [0-255] range after accounting for scrolling
+		word wrappedPixelYCoord = ((winy_ + ly_) % 0x100); // Makes sure Y coord is in the [0-255] range after accounting for scrolling
+
+		word bgXCoord = wrappedPixelXCoord >> 3;                                   // Transforms X coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
+		word bgYCoord = wrappedPixelYCoord >> 3;                                   // Transforms Y coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
+
+		word tileId = mem_[startingWindowMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
+		word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;       // Find tile address based on Tile ID. Each tile data occupies 16 bytes
+
+		if (signedTileAddressing)
+			tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sbyte>(tileId));
+
+		byte tileCol = wrappedPixelXCoord % 8; // Get tile data col to draw
+		byte tileRow = wrappedPixelYCoord % 8; // Get tile data row to draw
+
+		word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
+		byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
+		byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
+
+		byte colorIndexLSB = (targetTileDataFirstByte >> (7 - tileCol)) & 0x01;  // Get target bit from first byte
+		byte colorIndexMSB = (targetTileDataSecondByte >> (7 - tileCol)) & 0x01; // Get target bit from second byte
+
+		byte colorIndex = colorIndexMSB << 1 | colorIndexLSB; // Assemble final color index
+
+		bgAndWindowColorIndices[ly_ * 160 + i] = palette[colorIndex];
+		
+		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][0];
+		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][1];
+		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][2];
+		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][3];
+	}
 }
 
 void Display::renderOBJsScanline()

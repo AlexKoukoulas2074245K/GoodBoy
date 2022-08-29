@@ -14,7 +14,8 @@ public:
 		MBC1 = 0x1,
 		//MBC1_RAM = 0x2,
 		//MBC1_RAM_BATTERY = 0x3,
-		UNSUPPORTED = 0x2,
+		MBC3_RAM_BATTERY = 0x13,
+		UNSUPPORTED = 0x14,
 	};
 
 public:
@@ -29,11 +30,14 @@ public:
 
 private:
 	byte* cartridgeRom_;
+	byte* cartridgeExternalRam_;
 	std::string cartridgeName_;
 	CartridgeType cartridgeType_;
 	int cartridgeROMSizeInKB_;
-	int cartridgeRAMSizeInKB_;
+	int cartridgeExternalRAMSizeInKB_;
 	byte romBankNumberRegister_;
+	byte ramBankNumberRegister_;
+	bool externalRamEnabled_;
 };
 
 #endif

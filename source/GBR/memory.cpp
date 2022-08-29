@@ -79,6 +79,8 @@ byte Memory::readAt(const word address) const
 
 	if (address >= VRAM_START_ADDRESS && address <= VRAM_END_ADDRESS)
 		return display_.readByteAt(address);
+	else if (address >= EXTERNAL_RAM_START_ADDRESS && address <= EXTERNAL_RAM_END_ADDRESS)
+		return cartridge_.readByteAt(address);
 	else if (address >= OAM_START_ADDRESS && address <= OAM_END_ADDRESS)
 		return display_.readByteAt(address);
 	else if (address == JOYPAD_ADDRESS)
@@ -135,6 +137,11 @@ void Memory::writeAt(const word address, const byte b)
 	else if (address >= VRAM_START_ADDRESS && address <= VRAM_END_ADDRESS)
 	{
 		display_.writeByteAt(address, b);
+		return;
+	}
+	else if (address >= EXTERNAL_RAM_START_ADDRESS && address <= EXTERNAL_RAM_END_ADDRESS)
+	{
+		cartridge_.writeByteAt(address, b);
 		return;
 	}
 	else if (address >= OAM_START_ADDRESS && address <= OAM_END_ADDRESS)
