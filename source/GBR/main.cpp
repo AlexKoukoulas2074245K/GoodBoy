@@ -203,7 +203,7 @@ int main(int argc, char** argv)
     
     std::string cartridgeName;
     if (argc == 1)
-        cartridgeName = dmgSystem.loadCartridge("roms/red.gb");
+        cartridgeName = dmgSystem.loadCartridge("roms/ppu_test.gb");
     else
         cartridgeName = dmgSystem.loadCartridge(argv[argc - 1]);
 

@@ -37,6 +37,8 @@ private:
 	int cartridgeExternalRAMSizeInKB_;
 	byte romBankNumberRegister_;
 	byte ramBankNumberRegister_;
+	byte secondaryBankNumberRegister_;
+	byte bankingMode_;
 	bool externalRamEnabled_;
 };
 

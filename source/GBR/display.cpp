@@ -152,6 +152,12 @@ Display::Display()
 
 void Display::update(const unsigned int spentCpuCycles)
 {
+	// Display/PPU is off. Return early
+	if (!IS_BIT_SET(7, lcdControl_))
+	{
+		return;
+	}
+
 	if (dmaClockCyclesRemaining_ > 0)
 	{
 		dmaClockCyclesRemaining_ -= spentCpuCycles;
@@ -164,12 +170,6 @@ void Display::update(const unsigned int spentCpuCycles)
 				mem_[Memory::OAM_START_ADDRESS + i] = mem_[dmaSourceAddressStart_ + i];
 			}
 		}
-		return;
-	}
-
-	// Display/PPU is off. Return early
-	if (!IS_BIT_SET(7, lcdControl_))
-	{
 		return;
 	}
 
@@ -205,6 +205,8 @@ void Display::update(const unsigned int spentCpuCycles)
 						cpu_->triggerInterrupt(CPU::LCD_STAT_INTERRUPT_BIT);
 					}
 				}
+
+				compareLYtoLYC();
 			}
 		} break;
 
@@ -214,11 +216,16 @@ void Display::update(const unsigned int spentCpuCycles)
 			{
 				clock_ -= SCANLINE_DOTS;				
 				ly_++;
+
+				compareLYtoLYC();
 			}
 
 			if (ly_ == 154)
 			{
-				ly_ = 0;				
+				ly_ = 0;
+
+				compareLYtoLYC();
+
 				cb_(finalSDLPixels_);
 				
 				memset(bgAndWindowColorIndices, 0, sizeof(bgAndWindowColorIndices));
@@ -264,19 +271,6 @@ void Display::update(const unsigned int spentCpuCycles)
 				}
 			}
 		} break;
-	}
-
-	if (ly_ == lyc_)
-	{
-		SET_BIT(2, lcdStatus_);
-		if (IS_BIT_SET(6, lcdStatus_))
-		{
-			cpu_->triggerInterrupt(CPU::LCD_STAT_INTERRUPT_BIT);
-		}
-	}
-	else
-	{
-		RESET_BIT(2, lcdStatus_);
 	}
 }
 
@@ -345,7 +339,24 @@ void Display::writeByteAt(const word address, const byte b)
 
 	switch (address)
 	{
-		case LCD_CONTROL_ADDRESS: lcdControl_ = b; break;
+		case LCD_CONTROL_ADDRESS: 
+		{
+			bool oldLCDVal = IS_BIT_SET(7, lcdControl_);
+
+			lcdControl_ = b;
+			
+			if (IS_BIT_SET(7, lcdControl_) && !oldLCDVal)
+			{
+				compareLYtoLYC();
+			}
+			
+			if (!IS_BIT_SET(7, lcdControl_))
+			{
+				ly_ = 0;
+				clock_ = 0;
+				SET_DISPLAY_MODE(DISPLAY_MODE_HBLANK);
+			}
+		} break;
 		case LCD_STATUS_ADDRESS: lcdStatus_ = (b & 0xF8) | (lcdStatus_ & 0x07); break;  // Last 3 bits not writeable
 		case SCY_ADDRESS: scy_ = b; break;
 		case SCX_ADDRESS: scx_ = b; break;
@@ -353,8 +364,8 @@ void Display::writeByteAt(const word address, const byte b)
 		case LYC_ADDRESS: lyc_ = b; break;
 		case DMA_TRANSFER_ADDRESS: performDMATransfer(b); break;
 		case BG_PALETTE_DATA_ADDRESS: bgPalette_ = b; break;
-		case OBJ_PALETTE_0_DATA_ADDRESS: obj0Palette_ = b; break;
-		case OBJ_PALETTE_1_DATA_ADDRESS: obj1Palette_ = b; break;
+		case OBJ_PALETTE_0_DATA_ADDRESS: obj0Palette_ = b & 0xFC; break; // Bottom 2 bits are discarded since color index 0 for OBJs is always transparent
+		case OBJ_PALETTE_1_DATA_ADDRESS: obj1Palette_ = b & 0xFC; break; // Bottom 2 bits are discarded since color index 0 for OBJs is always transparent
 		case WIN_X_ADDRESS: winx_ = b; break;
 		case WIN_Y_ADDRESS: winy_ = b; break;
 		default: log(LogType::WARNING, "Display::writeByteAt Unknown write %s at %s", getHexByte(b).c_str(), getHexWord(address).c_str());
@@ -372,12 +383,12 @@ void Display::renderScanline()
 	// Display/Window disabled. Clear all pixels to white
 	if (!IS_BIT_SET(0, lcdControl_))
 	{
-		for (int i = 0; i < 160 * 144 * 4; i += 4)
+		for (int i = 0; i < 160; i += 4)
 		{
-			finalSDLPixels_[i + 0] = GAMEBOY_NATIVE_COLORS[0][0];
-			finalSDLPixels_[i + 1] = GAMEBOY_NATIVE_COLORS[0][1];
-			finalSDLPixels_[i + 2] = GAMEBOY_NATIVE_COLORS[0][2];
-			finalSDLPixels_[i + 3] = GAMEBOY_NATIVE_COLORS[0][3];
+			finalSDLPixels_[(ly_ * 4 * 160) + (i * 4) + 0] = GAMEBOY_NATIVE_COLORS[0][0];
+			finalSDLPixels_[(ly_ * 4 * 160) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[0][1];
+			finalSDLPixels_[(ly_ * 4 * 160) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[0][2];
+			finalSDLPixels_[(ly_ * 4 * 160) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[0][3];
 		}
 	}
 	else
@@ -466,6 +477,9 @@ void Display::renderWindowScanline()
 	for (int i = 0; i < 160; ++i)
 	{
 		if (ly_ < winy_) return;
+		if (static_cast<int>(winx_) - 7 >= 160) return;
+		if (winy_ >= 144) return;
+
 		word wrappedPixelXCoord = (((winx_ - 7) + i) % 0x100);   // Makes sure X coord is in the [0-255] range after accounting for scrolling
 		word wrappedPixelYCoord = ((winy_ + ly_) % 0x100); // Makes sure Y coord is in the [0-255] range after accounting for scrolling
 
@@ -507,7 +521,7 @@ void Display::renderOBJsScanline()
 	// Assemble current palette for OBJs. Bottom 2 bits are ignored because color index 0 is transparent for OBJs
 	byte obj0palette[4] =
 	{
-		0,
+		static_cast<byte>((obj0Palette_ & 0x03) >> 0),
 		static_cast<byte>((obj0Palette_ & 0x0C) >> 2),
 		static_cast<byte>((obj0Palette_ & 0x30) >> 4),
 		static_cast<byte>((obj0Palette_ & 0xC0) >> 6)
@@ -516,7 +530,7 @@ void Display::renderOBJsScanline()
 	// Assemble current palette for OBJs. Bottom 2 bits are ignored because color index 0 is transparent for OBJs
 	byte obj1palette[4] =
 	{
-		0,
+		static_cast<byte>((obj1Palette_ & 0x03) >> 0),
 		static_cast<byte>((obj1Palette_ & 0x0C) >> 2),
 		static_cast<byte>((obj1Palette_ & 0x30) >> 4),
 		static_cast<byte>((obj1Palette_ & 0xC0) >> 6)
@@ -562,6 +576,11 @@ void Display::renderOBJsScanline()
 
 			byte pixelCoordY = ly_;
 			byte pixelCoordX = objXPos + j;
+
+			if (pixelCoordX >= 160 || pixelCoordY >= 144)
+			{
+				continue;
+			}
 
 			// If BG and Window over obj and the current written pixel color by BG/window is not transparent
 			// then this object is skipped
@@ -634,4 +653,20 @@ void Display::searchOBJSInCurrentScanline()
 			// The smaller the X coordinate, the higher the priority.			
 			return lhsX > rhsX;		
 	});
+}
+
+void Display::compareLYtoLYC()
+{
+	if (ly_ == lyc_)
+	{
+		SET_BIT(2, lcdStatus_);
+		if (IS_BIT_SET(6, lcdStatus_))
+		{
+			cpu_->triggerInterrupt(CPU::LCD_STAT_INTERRUPT_BIT);
+		}
+	}
+	else
+	{
+		RESET_BIT(2, lcdStatus_);
+	}
 }

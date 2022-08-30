@@ -30,6 +30,8 @@ Cartridge::Cartridge()
 	, cartridgeExternalRAMSizeInKB_(0)
 	, romBankNumberRegister_(0x1)
 	, ramBankNumberRegister_(0x0)
+	, secondaryBankNumberRegister_(0x0)
+	, bankingMode_(0x0)
 	, externalRamEnabled_(false)
 {
 }
@@ -99,9 +101,25 @@ byte Cartridge::readByteAt(const word address) const
 			{
 				return cartridgeRom_[address];
 			}
-			else
+			else if (address <= 0x7FFF)
 			{
 				return cartridgeRom_[(address - 0x4000) + (romBankNumberRegister_ * 0x4000)];
+			}
+			else if (address >= 0xA000 && address <= 0xBFFF)
+			{
+				if (externalRamEnabled_)
+				{
+					return cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000];
+				}
+				else
+				{
+					log(LogType::WARNING, "Reading from external RAM but not enabled %s byte. Returning garbage", getHexWord(address).c_str());
+					return 0xFF;
+				}
+			}
+			else
+			{
+				log(LogType::WARNING, "Unhandled rom read address %s", getHexWord(address).c_str());
 			}
 		}
 		case CartridgeType::MBC3_RAM_BATTERY:
@@ -126,6 +144,10 @@ byte Cartridge::readByteAt(const word address) const
 					return 0xFF;
 				}
 			}
+			else
+			{
+				log(LogType::WARNING, "Unhandled rom read address %s", getHexWord(address).c_str());
+			}
 		}
 	}
 	return 0xFF;
@@ -144,7 +166,8 @@ void Cartridge::writeByteAt(const word address, const byte b)
 		{
 			if (address <= 0x1FFF)
 			{
-				log(LogType::WARNING, "RAM ENABLE written on an MBC1 with 0 RAM", getHexWord(address).c_str(), getHexByte(b).c_str());
+				if (b == 0x0A) externalRamEnabled_ = true;
+				if (b == 0x00) externalRamEnabled_ = false;
 			}
 			else if (address <= 0x3FFF)
 			{
@@ -156,6 +179,32 @@ void Cartridge::writeByteAt(const word address, const byte b)
 
 				// If this register is set to 0x00, it behaves as if it is set to 0x01
 				if ((b & 0x1F)== 0x0) romBankNumberRegister_ = 0x1;
+			}
+			else if (address <= 0x5FFF)
+			{
+				if (b <= 0x03)
+				{
+					ramBankNumberRegister_ = b;
+				}
+				else
+				{
+					log(LogType::WARNING, "Unhandled rom write address %s byte %s", getHexWord(address).c_str(), getHexByte(b).c_str());
+				}
+			}
+			else if (address <= 0x7FFF)
+			{
+				bankingMode_ = b & 0x2;
+			}
+			else if (address >= 0xA000 && address <= 0xBFFF)
+			{
+				if (externalRamEnabled_)
+				{
+					cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000] = b;
+				}
+				else
+				{
+					log(LogType::WARNING, "Writing to external ram address %s byte %s but ERAM not enabled. Ignoring write", getHexWord(address).c_str(), getHexByte(b).c_str());
+				}
 			}
 			else
 			{
@@ -208,6 +257,5 @@ void Cartridge::writeByteAt(const word address, const byte b)
 				log(LogType::WARNING, "Unhandled rom write address %s byte %s", getHexWord(address).c_str(), getHexByte(b).c_str());
 			}
 		} break;
-
 	}
 }

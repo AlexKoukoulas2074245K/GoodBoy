@@ -31,6 +31,7 @@ private:
 	void renderWindowScanline();
 	void renderOBJsScanline();
 	void searchOBJSInCurrentScanline();
+	void compareLYtoLYC();
 
 private:
 	byte finalSDLPixels_[160 * 144 * 4];
