@@ -32,6 +32,7 @@ private:
 	byte* cartridgeRom_;
 	byte* cartridgeExternalRam_;
 	std::string cartridgeName_;
+	byte rtcRegisters_[5];
 	CartridgeType cartridgeType_;
 	int cartridgeROMSizeInKB_;
 	int cartridgeExternalRAMSizeInKB_;

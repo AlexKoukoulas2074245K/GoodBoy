@@ -103,13 +103,20 @@ byte Cartridge::readByteAt(const word address) const
 			}
 			else if (address <= 0x7FFF)
 			{
-				return cartridgeRom_[(address - 0x4000) + (romBankNumberRegister_ * 0x4000)];
+				byte romBankTarget = romBankNumberRegister_;
+				if (bankingMode_ == 0)
+					romBankTarget |= (ramBankNumberRegister_ << 4);
+
+				return cartridgeRom_[(address - 0x4000) + (romBankTarget * 0x4000)];
 			}
 			else if (address >= 0xA000 && address <= 0xBFFF)
 			{
 				if (externalRamEnabled_)
 				{
-					return cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000];
+					if (bankingMode_ == 0)
+						return cartridgeExternalRam_[(address - 0xA000)];
+					else
+						return cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000];
 				}
 				else
 				{
@@ -132,11 +139,18 @@ byte Cartridge::readByteAt(const word address) const
 			{
 				return cartridgeRom_[(address - 0x4000) + (romBankNumberRegister_ * 0x4000)];
 			}
-			else if (address <= 0xBFFF)
+			else if (address >= 0xA000 && address <= 0xBFFF)
 			{
 				if (externalRamEnabled_)
 				{
-					return cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000];
+					if (ramBankNumberRegister_ <= 3)
+					{
+						return cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000];
+					}
+					else if (ramBankNumberRegister_ >= 0x08 && ramBankNumberRegister_ <= 0x0C)
+					{
+						return rtcRegisters_[ramBankNumberRegister_ - 0x08];
+					}					
 				}
 				else
 				{
@@ -166,8 +180,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 		{
 			if (address <= 0x1FFF)
 			{
-				if (b == 0x0A) externalRamEnabled_ = true;
-				if (b == 0x00) externalRamEnabled_ = false;
+				externalRamEnabled_ = (b & 0x0A) == 0x0A;
 			}
 			else if (address <= 0x3FFF)
 			{
@@ -178,7 +191,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 				assert(romBankNumberRegister_ * 16 < cartridgeROMSizeInKB_);
 
 				// If this register is set to 0x00, it behaves as if it is set to 0x01
-				if ((b & 0x1F)== 0x0) romBankNumberRegister_ = 0x1;
+				if (romBankNumberRegister_ == 0x0) romBankNumberRegister_ = 0x1;
 			}
 			else if (address <= 0x5FFF)
 			{
@@ -193,13 +206,16 @@ void Cartridge::writeByteAt(const word address, const byte b)
 			}
 			else if (address <= 0x7FFF)
 			{
-				bankingMode_ = b & 0x2;
+				bankingMode_ = b & 0x1;
 			}
 			else if (address >= 0xA000 && address <= 0xBFFF)
 			{
 				if (externalRamEnabled_)
-				{
-					cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000] = b;
+				{		
+					if (bankingMode_ == 0)
+						cartridgeExternalRam_[(address - 0xA000)] = b;
+					else
+						cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000] = b;
 				}
 				else
 				{
@@ -216,8 +232,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 		{
 			if (address <= 0x1FFF)
 			{
-				if (b == 0x0A) externalRamEnabled_ = true;
-				if (b == 0x00) externalRamEnabled_ = false;
+				externalRamEnabled_ = (b & 0x0A) == 0x0A;				
 			}
 			else if (address <= 0x3FFF)
 			{
@@ -245,7 +260,14 @@ void Cartridge::writeByteAt(const word address, const byte b)
 			{
 				if (externalRamEnabled_)
 				{
-					cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000] = b;
+					if (ramBankNumberRegister_ <= 3)
+					{
+						cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000] = b;
+					}
+					else if (ramBankNumberRegister_ >= 0x08 && ramBankNumberRegister_ <= 0x0C)
+					{
+						rtcRegisters_[ramBankNumberRegister_ - 0x08] = b;
+					}
 				}
 				else
 				{

@@ -185,8 +185,6 @@ void Display::update(const unsigned int spentCpuCycles)
 			{
 				clock_ -= HBLANK_DOTS;
 				
-				renderScanline();
-
 				if (++ly_ == 144)
 				{				
 					SET_DISPLAY_MODE(DISPLAY_MODE_VBLANK);
@@ -266,6 +264,8 @@ void Display::update(const unsigned int spentCpuCycles)
 			{				
 				clock_ -= TRANSFERRING_TO_LCD_DOTS;
 				SET_DISPLAY_MODE(DISPLAY_MODE_HBLANK);
+				
+				renderScanline();
 
 				if (IS_BIT_SET(3, lcdStatus_))
 				{
