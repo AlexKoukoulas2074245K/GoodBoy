@@ -175,8 +175,11 @@ void Memory::writeAt(const word address, const byte b)
 		log(LogType::INFO, ("Writing: " + getHexByte(b) + " at " + getHexWord(address) + "  VRAM_BANK_SELECT (" + getHexWord(VRAM_BANK_SELECT_ADDRESS) + "). CGB Only.").c_str());
 	else if (address == DISABLE_BOOT_ROM_ADDRESS)
 	{
-		log(LogType::INFO, ("Writing: " + getHexByte(b) + " at " + getHexWord(address) + "  DISABLE_BOOT_ROM_ADDRESS (" + getHexWord(DISABLE_BOOT_ROM_ADDRESS) + ").").c_str());
-		inBios_ = !(b > 0x0);
+		if (inBios_)
+		{
+			log(LogType::INFO, ("Writing: " + getHexByte(b) + " at " + getHexWord(address) + "  DISABLE_BOOT_ROM_ADDRESS (" + getHexWord(DISABLE_BOOT_ROM_ADDRESS) + ").").c_str());
+			inBios_ = !(b > 0x0);
+		}
 	}
 	else if (address >= VRAM_DMA_START_ADDRESS && address <= VRAM_DMA_END_ADDRESS)
 		log(LogType::INFO, ("Writing: " + getHexByte(b) + " at  " + getHexWord(address) + " VRAM_DMA (" + getHexWord(VRAM_DMA_START_ADDRESS) + "-" + getHexWord(VRAM_DMA_END_ADDRESS) + "). CGB Only.").c_str());

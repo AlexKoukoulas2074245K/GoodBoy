@@ -367,8 +367,8 @@ void Display::writeByteAt(const word address, const byte b)
 		case LYC_ADDRESS: lyc_ = b; break;
 		case DMA_TRANSFER_ADDRESS: performDMATransfer(b); break;
 		case BG_PALETTE_DATA_ADDRESS: bgPalette_ = b; break;
-		case OBJ_PALETTE_0_DATA_ADDRESS: obj0Palette_ = b & 0xFC; break; // Bottom 2 bits are discarded since color index 0 for OBJs is always transparent
-		case OBJ_PALETTE_1_DATA_ADDRESS: obj1Palette_ = b & 0xFC; break; // Bottom 2 bits are discarded since color index 0 for OBJs is always transparent
+		case OBJ_PALETTE_0_DATA_ADDRESS: obj0Palette_ = b; break; // Bottom 2 bits are discarded since color index 0 for OBJs is always transparent
+		case OBJ_PALETTE_1_DATA_ADDRESS: obj1Palette_ = b; break; // Bottom 2 bits are discarded since color index 0 for OBJs is always transparent
 		case WIN_X_ADDRESS: winx_ = b; break;
 		case WIN_Y_ADDRESS: winy_ = b; break;
 		default: log(LogType::WARNING, "Display::writeByteAt Unknown write %s at %s", getHexByte(b).c_str(), getHexWord(address).c_str());
@@ -625,25 +625,15 @@ void Display::renderOBJsScanline()
 
 			// Ignore transparent pixels
 			byte finalColorIndex = useObjPalette0 ? obj0palette[colorIndex] : obj1palette[colorIndex];
-			if (finalColorIndex == 0)
+			if (colorIndex == 0)
 			{
 				continue;
 			}
 
-			spriteColorIndices[pixelCoordY * 160 + pixelCoordX] = finalColorIndex;
-		}
-	}
-
-	// Copy over data from this scanline over to final pixels
-	for (int i = 0; i < 160; ++i)
-	{
-		byte colorIndex = spriteColorIndices[ly_ * 160 + i];
-		if (colorIndex != 0)
-		{
-			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = GAMEBOY_NATIVE_COLORS[colorIndex][0];
-			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[colorIndex][1];
-			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[colorIndex][2];
-			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[colorIndex][3];
+			finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 0] = GAMEBOY_NATIVE_COLORS[finalColorIndex][0];
+			finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 1] = GAMEBOY_NATIVE_COLORS[finalColorIndex][1];
+			finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 2] = GAMEBOY_NATIVE_COLORS[finalColorIndex][2];
+			finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 3] = GAMEBOY_NATIVE_COLORS[finalColorIndex][3];
 		}
 	}
 }

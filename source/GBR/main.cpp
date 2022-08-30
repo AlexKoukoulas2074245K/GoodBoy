@@ -198,8 +198,7 @@ int main(int argc, char** argv)
     // set vsync data
     unsigned int cpuClockCycles = 0;
     
-    System dmgSystem; 
-    //const auto cartridgeName = dmgSystem.loadCartridge("roms/tetris.gb");
+    System dmgSystem;     
     
     std::string cartridgeName;
     if (argc == 1)
