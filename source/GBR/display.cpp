@@ -139,6 +139,7 @@ Display::Display()
 	, lcdControl_(0)
 	, scy_(0), scx_(0)
 	, ly_(0)
+	, winLy_(0)
 	, lyc_(0)
 	, bgPalette_(0)
 	, obj0Palette_(0)
@@ -152,12 +153,6 @@ Display::Display()
 
 void Display::update(const unsigned int spentCpuCycles)
 {
-	// Display/PPU is off. Return early
-	if (!IS_BIT_SET(7, lcdControl_))
-	{
-		return;
-	}
-
 	if (dmaClockCyclesRemaining_ > 0)
 	{
 		dmaClockCyclesRemaining_ -= spentCpuCycles;
@@ -170,6 +165,12 @@ void Display::update(const unsigned int spentCpuCycles)
 				mem_[Memory::OAM_START_ADDRESS + i] = mem_[dmaSourceAddressStart_ + i];
 			}
 		}
+		return;
+	}
+
+	// Display/PPU is off. Return early
+	if (!IS_BIT_SET(7, lcdControl_))
+	{
 		return;
 	}
 
@@ -223,6 +224,7 @@ void Display::update(const unsigned int spentCpuCycles)
 			if (ly_ == 154)
 			{
 				ly_ = 0;
+				winLy_ = 0;
 
 				compareLYtoLYC();
 
@@ -354,6 +356,7 @@ void Display::writeByteAt(const word address, const byte b)
 			{
 				ly_ = 0;
 				clock_ = 0;
+				winLy_ = 0;
 				SET_DISPLAY_MODE(DISPLAY_MODE_HBLANK);
 			}
 		} break;
@@ -399,13 +402,14 @@ void Display::renderScanline()
 		if (IS_BIT_SET(5, lcdControl_))
 		{
 			renderWindowScanline();
+			
 		}
 	}
 
 	// Only draw OBJs if they are specifically enabled by bit 1
 	if (IS_BIT_SET(1, lcdControl_))
 	{
-		renderOBJsScanline();
+		renderOBJsScanline();		
 	}	
 }
 
@@ -474,14 +478,16 @@ void Display::renderWindowScanline()
 		static_cast<byte>((bgPalette_ & 0xC0) >> 6)
 	};
 
+	bool windowScanlineRendered = false;
 	for (int i = 0; i < 160; ++i)
 	{
 		if (ly_ < winy_) return;
-		if (static_cast<int>(winx_) - 7 >= 160) return;
+		if (i < (winx_ - 7)) continue;
+		if (static_cast<int>(winx_) - 7 >= 160) continue;
 		if (winy_ >= 144) return;
 
-		word wrappedPixelXCoord = (((winx_ - 7) + i) % 0x100);   // Makes sure X coord is in the [0-255] range after accounting for scrolling
-		word wrappedPixelYCoord = ((winy_ + ly_) % 0x100); // Makes sure Y coord is in the [0-255] range after accounting for scrolling
+		word wrappedPixelXCoord = ((i - (static_cast<int>(winx_) - 7)) % 0x100);   // Makes sure X coord is in the [0-255] range after accounting for scrolling
+		word wrappedPixelYCoord = (winLy_) % 0x100; // Makes sure Y coord is in the [0-255] range after accounting for scrolling
 
 		word bgXCoord = wrappedPixelXCoord >> 3;                                   // Transforms X coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
 		word bgYCoord = wrappedPixelYCoord >> 3;                                   // Transforms Y coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
@@ -510,7 +516,12 @@ void Display::renderWindowScanline()
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][1];
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][2];
 		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][3];
+
+		windowScanlineRendered = true;
 	}
+
+	if (windowScanlineRendered)
+		winLy_++;
 }
 
 void Display::renderOBJsScanline()
@@ -538,6 +549,9 @@ void Display::renderOBJsScanline()
 
 	for (word objAddress : selectedOBJAddressesForCurrentScanline_)
 	{
+		if (objAddress == 0xFE0C)
+			const auto b = false;
+
 		byte objYPos      = mem_[objAddress + 0] - 16;
 		byte objXPos      = mem_[objAddress + 1] - 8;
 		byte objTileIndex = mem_[objAddress + 2];
@@ -546,16 +560,36 @@ void Display::renderOBJsScanline()
 		bool bgAndWindowOverObj = IS_BIT_SET(7, objFlags);
 		bool isHorFlipped       = IS_BIT_SET(5, objFlags);
 		bool isVerFlipped       = IS_BIT_SET(6, objFlags);
-		bool useObjPalette0     = !IS_BIT_SET(4, 0);
+		bool useObjPalette0     = !IS_BIT_SET(4, objFlags);
 
 		word tileAddress = startingOBJTileDataAddress + 16 * objTileIndex; // Find tile address based on Tile ID. Each tile data occupies 16 bytes
 
-		if (xlSprites && ly_ >= objYPos + 8) // If 8x16 and the scanline is in the bottom tile+
-			tileAddress += 16;
+		if (xlSprites)
+		{
+			tileAddress = startingOBJTileDataAddress + 16 * (objTileIndex & 0xFE); // XL sprites ignore bottom bit of tile index
+			if (ly_ >= objYPos + 8)
+			{
+				tileAddress += 16;
+			}
+		}
 
 		byte tileRow = (ly_ - objYPos) % 8;
 		if (isVerFlipped)
-			tileRow = 8 - ((ly_ - objYPos) % 8);
+		{
+			if (xlSprites)
+			{
+				if (ly_ >= objYPos + 8)
+				{
+					tileAddress -= 16;
+				}
+				else
+				{
+					tileAddress += 16;
+				}
+			}
+			
+			tileRow = 7 - ((ly_ - objYPos) % 8);
+		}
 
 		word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
 		byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
@@ -628,31 +662,34 @@ void Display::searchOBJSInCurrentScanline()
 		if (xlSprites) // 8x16 case
 		{
 			if (ly_ >= objYPos && ly_ < objYPos + 16) 
-				selectedOBJAddressesForCurrentScanline_.push_back(i);
+				selectedOBJAddressesForCurrentScanline_.insert(selectedOBJAddressesForCurrentScanline_.begin(), i);
 		}
 		else // 8x8 case
 		{
 			if (ly_ >= objYPos && ly_ < objYPos + 8) 
-				selectedOBJAddressesForCurrentScanline_.push_back(i);
+				selectedOBJAddressesForCurrentScanline_.insert(selectedOBJAddressesForCurrentScanline_.begin(), i);
 		}
 
 		if (selectedOBJAddressesForCurrentScanline_.size() == 10) break;
 	}
 	
-	// When opaque pixels from two different objects overlap, which pixel ends up being displayed is determined by another kind of priority: 
-	// the pixel belonging to the higher-priority object wins.
-	std::sort(selectedOBJAddressesForCurrentScanline_.begin(), selectedOBJAddressesForCurrentScanline_.end(), [&](const word& lhs, const word& rhs) 
+	// Bubble sort for x priority
+	int count = static_cast<int>(selectedOBJAddressesForCurrentScanline_.size());
+	for (int i = 0; i < count - 1; ++i)
 	{
-		byte lhsX = mem_[lhs + 1];
-		byte rhsX = mem_[rhs + 1];
-
-		if (lhsX == rhsX)
-			// When X coordinates are identical, the object located first in OAM has higher priority.
-			return false;
-		else
-			// The smaller the X coordinate, the higher the priority.			
-			return lhsX > rhsX;		
-	});
+		for (int j = 0; j < count - i - 1; ++j)
+		{
+			byte lhsX = mem_[selectedOBJAddressesForCurrentScanline_[j] + 1];
+			byte rhsX = mem_[selectedOBJAddressesForCurrentScanline_[j + 1] + 1];
+			
+			if (lhsX < rhsX)
+			{
+				word temp = selectedOBJAddressesForCurrentScanline_[j + 1];
+				selectedOBJAddressesForCurrentScanline_[j + 1] = selectedOBJAddressesForCurrentScanline_[j];
+				selectedOBJAddressesForCurrentScanline_[j] = temp;
+			}
+		}
+	}
 }
 
 void Display::compareLYtoLYC()

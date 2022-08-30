@@ -49,6 +49,7 @@ private:
 	byte lcdControl_;
 	byte scy_, scx_;
 	byte ly_;
+	byte winLy_;
 	byte lyc_;
 	byte bgPalette_;
 	byte obj0Palette_;
