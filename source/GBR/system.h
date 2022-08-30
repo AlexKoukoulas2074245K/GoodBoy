@@ -1,6 +1,7 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#include "apu.h"
 #include "cartridge.h"
 #include "cpu.h"
 #include "display.h"
@@ -36,6 +37,7 @@ private:
 	Cartridge cartridge_;
 	Joypad joypad_;
 	Timer timer_;
+	APU apu_;
 	Memory mem_;
 	CPU cpu_;
 };

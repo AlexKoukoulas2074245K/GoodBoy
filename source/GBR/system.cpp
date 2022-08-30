@@ -5,7 +5,8 @@ System::System()
 	, cartridge_()
 	, joypad_()
 	, timer_()
-	, mem_(display_, cartridge_, joypad_, timer_)
+	, apu_()
+	, mem_(display_, cartridge_, joypad_, timer_, apu_)
 	, cpu_(mem_)
 {
 	display_.setMemory(mem_.mem_);
@@ -20,18 +21,21 @@ System::System()
 unsigned int System::emulateNextMachineStep()
 {
 	// Update CPU
-	unsigned int cpuclockCycles = cpu_.executeNextInstruction();
+	unsigned int cpuClockCycles = cpu_.executeNextInstruction();
 
 	// Update display based on spent clock cycles
-	display_.update(cpuclockCycles);
+	display_.update(cpuClockCycles);
 	
 	// Update timer based on spent clock cycles
-	timer_.update(cpuclockCycles);
+	timer_.update(cpuClockCycles);
+
+	// Update apu based on spent clock cycles
+	apu_.update(cpuClockCycles);
 
 	// Handle interrupts
-	cpuclockCycles += cpu_.handleInterrupts();
+	cpuClockCycles += cpu_.handleInterrupts();
 
-	return cpuclockCycles;
+	return cpuClockCycles;
 }
 
 std::string System::loadCartridge(const char* filename)

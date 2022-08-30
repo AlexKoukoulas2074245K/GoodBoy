@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+class APU;
 class Display;
 class Cartridge;
 class Joypad;
@@ -39,9 +40,7 @@ public:
 	static constexpr word TIMER_END_ADDRESS             = 0xFF07;
 	static constexpr word IF_ADDRESS                    = 0xFF0F;
 	static constexpr word SOUND_START_ADDRESS           = 0xFF10;
-	static constexpr word SOUND_END_ADDRESS             = 0xFF26;
-	static constexpr word WAVE_START_ADDRESS            = 0xFF30;
-	static constexpr word WAVE_END_ADDRESS              = 0xFF3F;
+	static constexpr word SOUND_END_ADDRESS             = 0xFF3F;
 	static constexpr word LCD_START_ADDRESS             = 0xFF40;
 	static constexpr word LCD_END_ADDRESS               = 0xFF4B;
 	static constexpr word VRAM_BANK_SELECT_ADDRESS      = 0xFF4F; // CGB+
@@ -55,7 +54,7 @@ public:
 
 public:
 	friend class System;
-	Memory(Display&, Cartridge&, Joypad&, Timer&);
+	Memory(Display&, Cartridge&, Joypad&, Timer&, APU&);
 
 	sbyte readSByteAt(const word address) const;
 
@@ -71,6 +70,7 @@ private:
 
 	byte mem_[65536];
 	
+	APU& apu_;
 	Display& display_;
 	Cartridge& cartridge_;
 	Joypad& joypad_;

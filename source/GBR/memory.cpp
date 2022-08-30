@@ -1,3 +1,4 @@
+#include "apu.h"
 #include "cartridge.h"
 #include "display.h"
 #include "joypad.h"
@@ -31,8 +32,9 @@ static const byte bios[256] =
 	0xF5, 0x06, 0x19, 0x78, 0x86, 0x23, 0x05, 0x20, 0xFB, 0x86, 0x20, 0xFE, 0x3E, 0x01, 0xE0, 0x50
 };
 
-Memory::Memory(Display& display, Cartridge& cartridge, Joypad& joypad, Timer& timer)
-	: display_(display)
+Memory::Memory(Display& display, Cartridge& cartridge, Joypad& joypad, Timer& timer, APU& apu)
+	: apu_(apu)
+	, display_(display)
 	, cartridge_(cartridge)
 	, joypad_(joypad)
 	, timer_(timer)
@@ -89,10 +91,8 @@ byte Memory::readAt(const word address) const
 		//log(LogType::INFO, ("Reading from " + getHexWord(address) + ": at SERIAL (" + getHexWord(SERIAL_TRANSFER_START_ADDRESS) + "-" + getHexWord(SERIAL_TRANSFER_END_ADDRESS) + ")").c_str());
 	else if (address >= TIMER_START_ADDRESS && address <= TIMER_END_ADDRESS)
 		return timer_.readByteAt(address);
-	else if (address >= SOUND_START_ADDRESS && address <= SOUND_END_ADDRESS) {}
-		//log(LogType::INFO, ("Reading from " + getHexWord(address) + ": at SOUND (" + getHexWord(SOUND_START_ADDRESS) + "-" + getHexWord(SOUND_END_ADDRESS) + ")").c_str());
-	else if (address >= WAVE_START_ADDRESS && address <= WAVE_END_ADDRESS) {}
-		//log(LogType::INFO, ("Reading from " + getHexWord(address) + ": at WAVE (" + getHexWord(WAVE_START_ADDRESS) + "-" + getHexWord(WAVE_END_ADDRESS) + ")").c_str());
+	else if (address >= SOUND_START_ADDRESS && address <= SOUND_END_ADDRESS)
+		return apu_.readByte(address);
 	else if (address >= LCD_START_ADDRESS && address <= LCD_END_ADDRESS)
 		return display_.readByteAt(address);
 	else if (address == VRAM_BANK_SELECT_ADDRESS)
@@ -161,10 +161,11 @@ void Memory::writeAt(const word address, const byte b)
 		timer_.writeByteAt(address, b);
 		return;
 	}
-	else if (address >= SOUND_START_ADDRESS && address <= SOUND_END_ADDRESS) {}
-		//log(LogType::INFO, ("Writing: " + getHexByte(b) + " at " + getHexWord(address) + "  SOUND (" + getHexWord(SOUND_START_ADDRESS) + "-" + getHexWord(SOUND_END_ADDRESS) + ")").c_str());
-	else if (address >= WAVE_START_ADDRESS && address <= WAVE_END_ADDRESS) {}
-		//log(LogType::INFO, ("Writing: " + getHexByte(b) + " at " + getHexWord(address) + "  WAVE (" + getHexWord(WAVE_START_ADDRESS) + "-" + getHexWord(WAVE_END_ADDRESS) + ")").c_str());
+	else if (address >= SOUND_START_ADDRESS && address <= SOUND_END_ADDRESS)
+	{
+		apu_.writeByte(address, b);
+		return;
+	}
 	else if (address >= LCD_START_ADDRESS && address <= LCD_END_ADDRESS)
 	{
 		display_.writeByteAt(address, b);
