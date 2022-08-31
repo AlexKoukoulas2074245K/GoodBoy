@@ -117,6 +117,18 @@ static constexpr word OBJ_PALETTE_1_DATA_ADDRESS = 0xFF49;
 static constexpr word WIN_Y_ADDRESS = 0xFF4A;
 static constexpr word WIN_X_ADDRESS = 0xFF4B;
 
+
+/*
+	This register can be written to change VRAM banks. Only bit 0 matters, all other bits are ignored.
+
+	VRAM bank 1 is split like VRAM bank 0 ; 8000-97FF also stores tiles (just like in bank 0), 
+	which can be accessed the same way as (and at the same time as) bank 0 tiles. 9800-9FFF contains the attributes for the corresponding Tile Maps.
+
+	Reading from this register will return the number of the currently loaded VRAM bank in bit 0, and all other bits will be set to 1.
+*/
+static constexpr word VRAM_BANK_ADDRESS = 0xFF4F;
+
+
 /*
 	System Core Colors
 */
@@ -145,9 +157,12 @@ Display::Display()
 	, obj0Palette_(0)
 	, obj1Palette_(0)
 	, winx_(0), winy_(0)
+	, cgbVramBank_(0xFE)
+	, cgbType_(Cartridge::CgbType::DMG)
 	, respectIllegalReadsWrites_(true)
 {
 	memset(finalSDLPixels_, 0xFF, sizeof(finalSDLPixels_));
+	memset(cgbVram_, 0xFF, sizeof(cgbVram_));
 	SET_DISPLAY_MODE(DISPLAY_MODE_VBLANK);
 }
 
@@ -285,7 +300,11 @@ byte Display::readByteAt(const word address) const
 			log(LogType::WARNING, "Attempt to read from VRAM during LCD transfer. Returning garbage."); 
 			if (respectIllegalReadsWrites_) return 0xFF;
 		}
-		return mem_[address];
+
+		if (cgbType_ == Cartridge::CgbType::DMG)
+			return mem_[address];
+		else
+			return cgbVram_[(address - Memory::VRAM_START_ADDRESS) + cgbVramBank_ * 0x2000];
 	}
 	if (address >= Memory::OAM_START_ADDRESS && address <= Memory::OAM_END_ADDRESS)
 	{
@@ -311,6 +330,7 @@ byte Display::readByteAt(const word address) const
 		case OBJ_PALETTE_1_DATA_ADDRESS: return obj1Palette_;
 		case WIN_X_ADDRESS: return winx_;
 		case WIN_Y_ADDRESS: return winy_;
+		case VRAM_BANK_ADDRESS: return cgbVramBank_;
 		default: log(LogType::WARNING, "Display::readByteAt Unknown read at %s", getHexWord(address).c_str());
 	}
 	return 0xFF;
@@ -325,7 +345,11 @@ void Display::writeByteAt(const word address, const byte b)
 			log(LogType::WARNING, "Attempt to write to VRAM during LCD transfer. Ignoring write.");			
 			if (respectIllegalReadsWrites_) return;
 		}
-		mem_[address] = b;
+
+		if (cgbType_ == Cartridge::CgbType::DMG)
+			mem_[address] = b;
+		else
+			cgbVram_[(address - Memory::VRAM_START_ADDRESS) + cgbVramBank_ * 0x2000] = b;
 		return;
 	}
 	if (address >= Memory::OAM_START_ADDRESS && address <= Memory::OAM_END_ADDRESS)
@@ -371,6 +395,7 @@ void Display::writeByteAt(const word address, const byte b)
 		case OBJ_PALETTE_1_DATA_ADDRESS: obj1Palette_ = b; break; // Bottom 2 bits are discarded since color index 0 for OBJs is always transparent
 		case WIN_X_ADDRESS: winx_ = b; break;
 		case WIN_Y_ADDRESS: winy_ = b; break;
+		case VRAM_BANK_ADDRESS: cgbVramBank_ = ((b & 0x1) == 0x1) ? 0xFF : 0xFE; break; // Only set bottom bit for selected vram bank
 		default: log(LogType::WARNING, "Display::writeByteAt Unknown write %s at %s", getHexByte(b).c_str(), getHexWord(address).c_str());
 	}
 }
@@ -549,9 +574,6 @@ void Display::renderOBJsScanline()
 
 	for (word objAddress : selectedOBJAddressesForCurrentScanline_)
 	{
-		if (objAddress == 0xFE0C)
-			const auto b = false;
-
 		byte objYPos      = mem_[objAddress + 0] - 16;
 		byte objXPos      = mem_[objAddress + 1] - 8;
 		byte objTileIndex = mem_[objAddress + 2];

@@ -2,6 +2,7 @@
 #define DISPLAY_H
 
 #include "types.h"
+#include "cartridge.h"
 
 #include <functional>
 #include <vector>
@@ -16,6 +17,7 @@ public:
 	void setVBlankCallback(VBlankCallback cb) { cb_ = cb; }
 	void setMemory(byte* mem) { mem_ = mem; }
 	void setCPU(CPU* cpu) { cpu_ = cpu; }
+	void setCartridgeCgbType(Cartridge::CgbType cgbType) { cgbType_ = cgbType; }
 
 	void update(const unsigned int spentCpuCycles);
 
@@ -34,6 +36,7 @@ private:
 	void compareLYtoLYC();
 
 private:
+	byte cgbVram_[0x4000];
 	byte finalSDLPixels_[160 * 144 * 4];
 	byte bgAndWindowColorIndices[160 * 144];
 	byte spriteColorIndices[160 * 144];
@@ -55,6 +58,8 @@ private:
 	byte obj0Palette_;
 	byte obj1Palette_;
 	byte winx_, winy_;
+	byte cgbVramBank_;
+	Cartridge::CgbType cgbType_;
 	bool respectIllegalReadsWrites_;
 };
 

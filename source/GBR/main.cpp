@@ -177,17 +177,17 @@ int main(int argc, char** argv)
     // set vsync data
     unsigned int cpuClockCycles = 0;
     
-    System dmgSystem;     
+    System gameboySystem;     
     
     std::string cartridgeName;
     if (argc == 1)
-        cartridgeName = dmgSystem.loadCartridge("roms/yellow.gbc");
+        cartridgeName = gameboySystem.loadCartridge("roms/red.gb");
     else
-        cartridgeName = dmgSystem.loadCartridge(argv[argc - 1]);
+        cartridgeName = gameboySystem.loadCartridge(argv[argc - 1]);
 
-    dmgSystem.setVBlankCallback(VBlankCallback);
+    gameboySystem.setVBlankCallback(VBlankCallback);
 
-    SDL_SetWindowTitle(spWindow.get(), ("GBR: Emulating " + cartridgeName).c_str());
+    SDL_SetWindowTitle(spWindow.get(), ("GBR: " + cartridgeName).c_str());
 
     Uint64 frameStart = SDL_GetPerformanceCounter();
     while (isRunning)
@@ -207,10 +207,10 @@ int main(int argc, char** argv)
             continue;
         }
 
-        ProcessInput(dmgSystem);
+        ProcessInput(gameboySystem);
         while (cpuClockCycles < CPU_CLOCK_CYCLES_PER_FRAME)
         {
-            cpuClockCycles += dmgSystem.emulateNextMachineStep();
+            cpuClockCycles += gameboySystem.emulateNextMachineStep();
         }
 
         cpuClockCycles -= CPU_CLOCK_CYCLES_PER_FRAME;

@@ -40,7 +40,9 @@ unsigned int System::emulateNextMachineStep()
 
 std::string System::loadCartridge(const char* filename)
 {
-	return cartridge_.loadCartridge(filename);
+	const auto& cartridgeName = cartridge_.loadCartridge(filename);
+	mem_.setCartridgeCgbType(cartridge_.getCgbType());
+	return cartridgeName;
 }
 
 void System::setInputState(const byte actionButtons, const byte directionButtons)

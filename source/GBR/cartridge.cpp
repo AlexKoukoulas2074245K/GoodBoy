@@ -8,6 +8,7 @@
 
 static constexpr word CARTRIDGE_TITLE_LENGTH  = 0x10;
 static constexpr word CARTRIDGE_TITLE_ADDRESS = 0x0134;
+static constexpr word CARTRIDGE_CGB_ADDRESS = 0x0143;
 static constexpr word CARTRIDGE_TYPE_ADDRESS  = 0x0147;
 static constexpr word CARTRIDGE_ROM_SIZE_ADDRESS = 0x0148;
 static constexpr word CARTRIDGE_RAM_SIZE_ADDRESS = 0x0149;
@@ -16,7 +17,8 @@ static const std::string CARTRIDGE_TYPE_NAMES[] =
 {
 	"(ROM ONLY)", "(MBC1)", "(MBC1 + RAM)", "(MBC1+RAM+BATTERY)", "", "(MBC2)",
 	"(MBC2+BATTERY)", "", "(ROM+RAM)", "(ROM+RAM+BATTERY)", "", "(MMM01)", "(MMM01+RAM)", "(MMM01+RAM+BATTERY)",
-	"", "(MBC3+TIMER+BATTERY)", "(MBC3+TIMER+RAM+BATTERY)", "(MBC3)", "(MBC3+RAM)", "(MBC3+RAM+BATTERY)"
+	"", "(MBC3+TIMER+BATTERY)", "(MBC3+TIMER+RAM+BATTERY)", "(MBC3)", "(MBC3+RAM)", "(MBC3+RAM+BATTERY)", "",
+	"", "", "", "", "(MBC5)", "(MBC5+RAM)", "(MBC5+RAM+BATTERY)"
 };
 
 static const word CARTRIDGE_RAM_SIZES[] =
@@ -34,8 +36,8 @@ Cartridge::Cartridge()
 	, ramBankNumberRegister_(0x0)
 	, secondaryBankNumberRegister_(0x0)
 	, bankingMode_(0x0)
+	, cgbType_(CgbType::DMG)
 	, externalRamEnabled_(false)
-	, hasRTC_(false)
 {
 }
 
@@ -48,53 +50,12 @@ std::string Cartridge::loadCartridge(const char* filepath)
 {
 	log(LogType::INFO, "Loading %s", filepath);
 	
+	readCartridgeRom(filepath);
 	setSaveFilename(filepath);
-
-	FILE* file = fopen(filepath, "rb");
-
-	// get file size
-	fseek(file, 0, SEEK_END);
-	long size = ftell(file);
-	fseek(file, 0, SEEK_SET);
-
-	// copy cartridge over
-	cartridgeRom_ = new byte[size];
-	fread(cartridgeRom_, sizeof(byte), size, file);
-	fclose(file);
-
-	std::string cartridgeName(&cartridgeRom_[CARTRIDGE_TITLE_ADDRESS], &cartridgeRom_[CARTRIDGE_TITLE_ADDRESS] + CARTRIDGE_TITLE_LENGTH);
-	for (unsigned int i = 0U; i < cartridgeName.length(); ++i)
-	{
-		if (cartridgeName[i] == '\0') break;
-		cartridgeName_ += cartridgeName[i];
-	}
-
-	byte type = cartridgeRom_[CARTRIDGE_TYPE_ADDRESS];
-	if (type >= static_cast<byte>(CartridgeType::UNSUPPORTED))
-	{
-		return " UNSUPPORTED";
-	}
-
-	hasRTC_ = type == 0x0F || type == 0x10;
-
-	cartridgeType_ = static_cast<CartridgeType>(type);
-	cartridgeROMSizeInKB_ = 32 * (1 << cartridgeRom_[CARTRIDGE_ROM_SIZE_ADDRESS]);
-	cartridgeExternalRAMSizeInKB_ = CARTRIDGE_RAM_SIZES[cartridgeRom_[CARTRIDGE_RAM_SIZE_ADDRESS]];
-
-	cartridgeExternalRam_ = new byte[cartridgeExternalRAMSizeInKB_ * 1024];
-	memset(cartridgeExternalRam_, 0xFF, cartridgeExternalRAMSizeInKB_ * 1024);
-	FILE* eRamFile = fopen(saveFileName_.c_str(), "rb");
-	if (eRamFile != nullptr)
-	{
-		// get file size
-		fseek(eRamFile, 0, SEEK_END);
-		long size = ftell(eRamFile);
-		fseek(eRamFile, 0, SEEK_SET);
-		fread(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1024, eRamFile);
-		fclose(eRamFile);
-	}
-
-	return cartridgeName_ + " " + CARTRIDGE_TYPE_NAMES[type];
+	setCartridgeAttributes();
+	setCartridgeExternalRam();
+	
+	return cartridgeName_ + " " + CARTRIDGE_TYPE_NAMES[static_cast<int>(cartridgeType_)];
 }
 
 void Cartridge::unloadCartridge()
@@ -364,6 +325,21 @@ void Cartridge::writeByteAt(const word address, const byte b)
 	}
 }
 
+void Cartridge::readCartridgeRom(const char* filepath)
+{
+	FILE* file = fopen(filepath, "rb");
+
+	// get file size
+	fseek(file, 0, SEEK_END);
+	long size = ftell(file);
+	fseek(file, 0, SEEK_SET);
+
+	// copy cartridge over
+	cartridgeRom_ = new byte[size];
+	fread(cartridgeRom_, sizeof(byte), size, file);
+	fclose(file);
+}
+
 void Cartridge::setSaveFilename(const char* filepath)
 {
 	saveFileName_.clear();
@@ -378,21 +354,65 @@ void Cartridge::setSaveFilename(const char* filepath)
 	saveFileName_ += ".sav";
 }
 
+void Cartridge::setCartridgeAttributes()
+{
+	std::string cartridgeName(&cartridgeRom_[CARTRIDGE_TITLE_ADDRESS], &cartridgeRom_[CARTRIDGE_TITLE_ADDRESS] + CARTRIDGE_TITLE_LENGTH);
+	for (unsigned int i = 0U; i < cartridgeName.length(); ++i)
+	{
+		if (cartridgeName[i] == '\0') break;
+		cartridgeName_ += cartridgeName[i];
+	}
+
+	// Cartridge Type
+	cartridgeType_ = static_cast<CartridgeType>(cartridgeRom_[CARTRIDGE_TYPE_ADDRESS]);
+
+	// Cartridge Rom Size
+	cartridgeROMSizeInKB_ = 32 * (1 << cartridgeRom_[CARTRIDGE_ROM_SIZE_ADDRESS]);
+
+	// Cartridge Ram size
+	cartridgeExternalRAMSizeInKB_ = CARTRIDGE_RAM_SIZES[cartridgeRom_[CARTRIDGE_RAM_SIZE_ADDRESS]];
+
+	// CGB Type
+	switch (cartridgeRom_[CARTRIDGE_CGB_ADDRESS])
+	{
+		case 0x80: cgbType_ = CgbType::BACKWARDS_COMPATIBLE; break;
+		case 0xC0: cgbType_ = CgbType::CGB_ONLY; break;
+		default: cgbType_ = CgbType::DMG; break;
+	}
+
+}
+
+void Cartridge::setCartridgeExternalRam()
+{
+	cartridgeExternalRam_ = new byte[cartridgeExternalRAMSizeInKB_ * 1024];
+	memset(cartridgeExternalRam_, 0xFF, cartridgeExternalRAMSizeInKB_ * 1024);
+	FILE* eRamFile = fopen(saveFileName_.c_str(), "rb");
+	if (eRamFile != nullptr)
+	{
+		// get file size
+		fseek(eRamFile, 0, SEEK_END);
+		long size = ftell(eRamFile);
+		fseek(eRamFile, 0, SEEK_SET);
+		fread(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1024, eRamFile);
+		fclose(eRamFile);
+	}
+}
+
 void Cartridge::flushExternalRamToFile()
 {
 	switch (cartridgeType_)
 	{
-		case CartridgeType::MBC1_RAM_BATTERY:
-		case CartridgeType::MBC3_RAM_BATTERY:
-		case CartridgeType::MBC5_RAM_BATTERY:
+	case CartridgeType::MBC1_RAM_BATTERY:
+	case CartridgeType::MBC3_RAM_BATTERY:
+	case CartridgeType::MBC5_RAM_BATTERY:
+	{
+		if (cartridgeExternalRAMSizeInKB_ > 0 && !externalRamEnabled_)
 		{
-			if (cartridgeExternalRAMSizeInKB_ > 0 && !externalRamEnabled_)
-			{
-				FILE* file = fopen(saveFileName_.c_str(), "wb");
-				fwrite(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1024, file);
-				fclose(file);
-			}
-		} break;
-		default: break;
+			FILE* file = fopen(saveFileName_.c_str(), "wb");
+			fwrite(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1024, file);
+			fclose(file);
+		}
+	} break;
+	default: break;
 	}
 }

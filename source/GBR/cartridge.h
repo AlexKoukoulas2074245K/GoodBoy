@@ -19,18 +19,30 @@ public:
 		UNSUPPORTED = 0x1c,
 	};
 
+	enum class CgbType
+	{
+		DMG,
+		BACKWARDS_COMPATIBLE,
+		CGB_ONLY
+	};
+
 public:
 	Cartridge();
 	~Cartridge();
 
 	std::string loadCartridge(const char* filepath);
 	void unloadCartridge();
-	
+
+	CgbType getCgbType() const { return cgbType_; }
+
 	byte readByteAt(const word address) const;
 	void writeByteAt(const word address, const byte b);
 
 private:
+	void readCartridgeRom(const char* filepath);
 	void setSaveFilename(const char* filepath);
+	void setCartridgeAttributes();
+	void setCartridgeExternalRam();
 	void flushExternalRamToFile();
 
 private:
@@ -45,7 +57,7 @@ private:
 	byte ramBankNumberRegister_;
 	byte secondaryBankNumberRegister_;
 	byte bankingMode_;
-	bool hasRTC_;
+	CgbType cgbType_;
 	bool externalRamEnabled_;
 };
 

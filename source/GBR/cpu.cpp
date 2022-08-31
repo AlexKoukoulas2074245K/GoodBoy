@@ -92,11 +92,6 @@ CPU::CPU(Memory& mem)
 
 unsigned int CPU::executeNextInstruction()
 {
-	if (registersPC_ == 0x590E) 
-	{
-		auto b = false;
-	}
-
 	if (isHalted_)
 	{
 		return coreInstructionClockCycles[0];

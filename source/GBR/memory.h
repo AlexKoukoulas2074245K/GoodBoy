@@ -2,10 +2,10 @@
 #define MEMORY_H
 
 #include "types.h"
+#include "cartridge.h"
 
 class APU;
 class Display;
-class Cartridge;
 class Joypad;
 class Timer;
 class Memory final
@@ -32,29 +32,33 @@ public:
 	static constexpr word HRAM_START_ADDRESS         = 0xFF80;
 	static constexpr word HRAM_END_ADDRESS           = 0xFFFE;
 
-	static constexpr word CARTRIDGE_HEADER_ADDRESS      = 0x0100;
-	static constexpr word JOYPAD_ADDRESS                = 0xFF00;
-	static constexpr word SERIAL_TRANSFER_START_ADDRESS = 0xFF01;
-	static constexpr word SERIAL_TRANSFER_END_ADDRESS   = 0xFF02;
-	static constexpr word TIMER_START_ADDRESS           = 0xFF04;
-	static constexpr word TIMER_END_ADDRESS             = 0xFF07;
-	static constexpr word IF_ADDRESS                    = 0xFF0F;
-	static constexpr word SOUND_START_ADDRESS           = 0xFF10;
-	static constexpr word SOUND_END_ADDRESS             = 0xFF3F;
-	static constexpr word LCD_START_ADDRESS             = 0xFF40;
-	static constexpr word LCD_END_ADDRESS               = 0xFF4B;
-	static constexpr word VRAM_BANK_SELECT_ADDRESS      = 0xFF4F; // CGB+
-	static constexpr word DISABLE_BOOT_ROM_ADDRESS      = 0xFF50;
-	static constexpr word VRAM_DMA_START_ADDRESS        = 0xFF51; // CGB+
-	static constexpr word VRAM_DMA_END_ADDRESS          = 0xFF55; // CGB+
-	static constexpr word BG_OBJ_PALETTES_START_ADDRESS = 0xFF68; // CGB+
-	static constexpr word BG_OBJ_PALETTES_END_ADDRESS   = 0xFF69; // CGB+
-	static constexpr word WRAM_BANK_SELECT_ADDRESS      = 0xFF70; // CGB+
-	static constexpr word IE_ADDRESS                    = 0xFFFF;
+	static constexpr word CARTRIDGE_HEADER_START_ADDRESS = 0x0100;
+	static constexpr word CARTRIDGE_HEADER_END_ADDRESS   = 0x014F;
+	static constexpr word JOYPAD_ADDRESS                 = 0xFF00;
+	static constexpr word SERIAL_TRANSFER_START_ADDRESS  = 0xFF01;
+	static constexpr word SERIAL_TRANSFER_END_ADDRESS    = 0xFF02;
+	static constexpr word TIMER_START_ADDRESS            = 0xFF04;
+	static constexpr word TIMER_END_ADDRESS              = 0xFF07;
+	static constexpr word IF_ADDRESS                     = 0xFF0F;
+	static constexpr word SOUND_START_ADDRESS            = 0xFF10;
+	static constexpr word SOUND_END_ADDRESS              = 0xFF3F;
+	static constexpr word LCD_START_ADDRESS              = 0xFF40;
+	static constexpr word LCD_END_ADDRESS                = 0xFF4B;
+	static constexpr word VRAM_BANK_SELECT_ADDRESS       = 0xFF4F; // CGB+
+	static constexpr word DISABLE_BOOT_ROM_ADDRESS       = 0xFF50;
+	static constexpr word VRAM_DMA_START_ADDRESS         = 0xFF51; // CGB+
+	static constexpr word VRAM_DMA_END_ADDRESS           = 0xFF55; // CGB+
+	static constexpr word BG_OBJ_PALETTES_START_ADDRESS  = 0xFF68; // CGB+
+	static constexpr word BG_OBJ_PALETTES_END_ADDRESS    = 0xFF69; // CGB+
+	static constexpr word OBJECT_PRIORITY_ADDRESS        = 0xFF6C; // CGB+
+	static constexpr word WRAM_BANK_SELECT_ADDRESS       = 0xFF70; // CGB+
+	static constexpr word IE_ADDRESS                     = 0xFFFF;
 
 public:
 	friend class System;
 	Memory(Display&, Cartridge&, Joypad&, Timer&, APU&);
+
+	void setCartridgeCgbType(Cartridge::CgbType cgbType) { cgbType_ = cgbType; }
 
 	sbyte readSByteAt(const word address) const;
 
@@ -68,13 +72,15 @@ private:
 	byte readAt(const word address) const;
 	void writeAt(const word address, const byte b);
 
-	byte mem_[65536];
-	
+	byte mem_[0x10000];
+	byte cgbWram_[0x8000];
 	APU& apu_;
 	Display& display_;
 	Cartridge& cartridge_;
 	Joypad& joypad_;
 	Timer& timer_;
+	byte cgbWramBank_;
+	Cartridge::CgbType cgbType_;
 	bool inBios_;
 };
 
