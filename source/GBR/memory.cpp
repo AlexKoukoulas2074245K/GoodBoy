@@ -111,6 +111,9 @@ byte Memory::readAt(const word address) const
 
 void Memory::writeAt(const word address, const byte b)
 {
+	if (address == 0xC031)
+		const auto b = false;
+
 	// On DMG, during this time (DMA), the CPU can access only HRAM(memory at $FF80 - $FFFE)
 	if (display_.dmaTransferInProgress())
 	{

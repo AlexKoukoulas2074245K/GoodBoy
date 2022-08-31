@@ -22,16 +22,21 @@ public:
 	Cartridge();
 	~Cartridge();
 
-	std::string loadCartridge(const char* filename);
+	std::string loadCartridge(const char* filepath);
 	void unloadCartridge();
 	
 	byte readByteAt(const word address) const;
 	void writeByteAt(const word address, const byte b);
 
 private:
+	void setSaveFilename(const char* filepath);
+	void flushExternalRamToFile();
+
+private:
 	byte* cartridgeRom_;
 	byte* cartridgeExternalRam_;
 	std::string cartridgeName_;
+	std::string saveFileName_;
 	byte rtcRegisters_[5];
 	CartridgeType cartridgeType_;
 	int cartridgeROMSizeInKB_;

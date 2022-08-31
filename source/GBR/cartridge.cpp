@@ -14,7 +14,9 @@ static constexpr word CARTRIDGE_RAM_SIZE_ADDRESS = 0x0149;
 
 static const std::string CARTRIDGE_TYPE_NAMES[] =
 {
-	"(ROM ONLY)", "(MBC1)", "(MBC1 + RAM)", "(MBC1+RAM+BATTERY)"
+	"(ROM ONLY)", "(MBC1)", "(MBC1 + RAM)", "(MBC1+RAM+BATTERY)", "", "(MBC2)",
+	"(MBC2+BATTERY)", "", "(ROM+RAM)", "(ROM+RAM+BATTERY)", "", "(MMM01)", "(MMM01+RAM)", "(MMM01+RAM+BATTERY)",
+	"", "(MBC3+TIMER+BATTERY)", "(MBC3+TIMER+RAM+BATTERY)", "(MBC3)", "(MBC3+RAM)", "(MBC3+RAM+BATTERY)"
 };
 
 static const word CARTRIDGE_RAM_SIZES[] =
@@ -41,11 +43,13 @@ Cartridge::~Cartridge()
 	unloadCartridge();
 }
 
-std::string Cartridge::loadCartridge(const char* filename)
+std::string Cartridge::loadCartridge(const char* filepath)
 {
-	log(LogType::INFO, "Loading %s", filename);
+	log(LogType::INFO, "Loading %s", filepath);
+	
+	setSaveFilename(filepath);
 
-	FILE* file = fopen(filename, "rb");
+	FILE* file = fopen(filepath, "rb");
 
 	// get file size
 	fseek(file, 0, SEEK_END);
@@ -55,7 +59,8 @@ std::string Cartridge::loadCartridge(const char* filename)
 	// copy cartridge over
 	cartridgeRom_ = new byte[size];
 	fread(cartridgeRom_, sizeof(byte), size, file);
-	
+	fclose(file);
+
 	std::string cartridgeName(&cartridgeRom_[CARTRIDGE_TITLE_ADDRESS], &cartridgeRom_[CARTRIDGE_TITLE_ADDRESS] + CARTRIDGE_TITLE_LENGTH);
 	for (unsigned int i = 0U; i < cartridgeName.length(); ++i)
 	{
@@ -70,14 +75,22 @@ std::string Cartridge::loadCartridge(const char* filename)
 	}
 
 	cartridgeType_ = static_cast<CartridgeType>(type);
-	cartridgeName_ += " " + CARTRIDGE_TYPE_NAMES[type];
 	cartridgeROMSizeInKB_ = 32 * (1 << cartridgeRom_[CARTRIDGE_ROM_SIZE_ADDRESS]);
 	cartridgeExternalRAMSizeInKB_ = CARTRIDGE_RAM_SIZES[cartridgeRom_[CARTRIDGE_RAM_SIZE_ADDRESS]];
 
 	cartridgeExternalRam_ = new byte[cartridgeExternalRAMSizeInKB_ * 1000];
 	memset(cartridgeExternalRam_, 0xFF, cartridgeExternalRAMSizeInKB_);
+	FILE* eRamFile = fopen(saveFileName_.c_str(), "r");
+	if (eRamFile != nullptr)
+	{
+		// get file size
+		fseek(eRamFile, 0, SEEK_END);
+		long size = ftell(eRamFile);
+		fseek(eRamFile, 0, SEEK_SET);
+		fread(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1000, eRamFile);
+	}
 
-	return " " + cartridgeName_;
+	return cartridgeName_ + " " + CARTRIDGE_TYPE_NAMES[type];
 }
 
 void Cartridge::unloadCartridge()
@@ -197,7 +210,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 			{
 				if (b <= 0x03)
 				{
-					ramBankNumberRegister_ = b;
+					ramBankNumberRegister_ = b;					
 				}
 				else
 				{
@@ -216,11 +229,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 						cartridgeExternalRam_[(address - 0xA000)] = b;
 					else
 						cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000] = b;
-				}
-				else
-				{
-					log(LogType::WARNING, "Writing to external ram address %s byte %s but ERAM not enabled. Ignoring write", getHexWord(address).c_str(), getHexByte(b).c_str());
-				}
+				}				
 			}
 			else
 			{
@@ -232,7 +241,9 @@ void Cartridge::writeByteAt(const word address, const byte b)
 		{
 			if (address <= 0x1FFF)
 			{
-				externalRamEnabled_ = (b & 0x0A) == 0x0A;				
+				externalRamEnabled_ = (b & 0x0A) == 0x0A;	
+				if (b == 0x00) flushExternalRamToFile();
+					
 			}
 			else if (address <= 0x3FFF)
 			{
@@ -249,7 +260,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 			{
 				if (b <= 0x03)
 				{
-					ramBankNumberRegister_ = b;
+					ramBankNumberRegister_ = b;				
 				}
 				else
 				{
@@ -279,5 +290,28 @@ void Cartridge::writeByteAt(const word address, const byte b)
 				log(LogType::WARNING, "Unhandled rom write address %s byte %s", getHexWord(address).c_str(), getHexByte(b).c_str());
 			}
 		} break;
+	}
+}
+
+void Cartridge::setSaveFilename(const char* filepath)
+{
+	saveFileName_.clear();
+	std::string path(filepath);
+	for (auto i = path.size() - 1; i >= 0; --i)
+	{
+		if (path[i] == '/' || path[i] == '\\') break;
+		saveFileName_ = path[i] + saveFileName_;
+	}
+
+	saveFileName_ += ".sav";
+}
+
+void Cartridge::flushExternalRamToFile()
+{
+	if (cartridgeExternalRAMSizeInKB_ > 0)
+	{
+		FILE* file = fopen(saveFileName_.c_str(), "w");
+		fwrite(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1000, file);
+		fclose(file);
 	}
 }

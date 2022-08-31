@@ -202,7 +202,7 @@ int main(int argc, char** argv)
     
     std::string cartridgeName;
     if (argc == 1)
-        cartridgeName = dmgSystem.loadCartridge("roms/SuperMarioLand.gb");
+        cartridgeName = dmgSystem.loadCartridge("roms/red.gb");
     else
         cartridgeName = dmgSystem.loadCartridge(argv[argc - 1]);
 

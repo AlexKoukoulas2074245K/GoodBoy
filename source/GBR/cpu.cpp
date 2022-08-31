@@ -92,10 +92,10 @@ CPU::CPU(Memory& mem)
 
 unsigned int CPU::executeNextInstruction()
 {
-	//if (registersPC_ == 0xC2EB) 
-	//{
-	//	auto b = false;
-	//}
+	if (registersPC_ == 0x590E) 
+	{
+		auto b = false;
+	}
 
 	if (isHalted_)
 	{
@@ -1552,7 +1552,7 @@ void CPU::dechl()
 	else
 		RESET_H_FLAG();
 
-	mem_.writeWordAt(hlAddress, calc);
+	mem_.writeByteAt(hlAddress, calc);
 }
 
 void CPU::daa()
