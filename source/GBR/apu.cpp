@@ -3,7 +3,7 @@
 
 #include "apu.h"
 
-#define DISABLE_ALL_SOUND
+//#define DISABLE_ALL_SOUND
 
 #define ARRAYSIZE(a) (sizeof a / sizeof a[0])
 #define ISBITSET(val, bit) (((val >> bit) & 0x01) == 0x01)

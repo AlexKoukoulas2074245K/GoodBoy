@@ -140,27 +140,6 @@ int main(int argc, char** argv)
     std::unique_ptr<SDL_Window, SDLWindowDeleter> spWindow;
     SDL_Event event;
 
-    /*std::ifstream gladFile("glad_out.txt");
-    std::ifstream ourFile("out.txt");
-
-    std::string line1, line2;
-    std::string line1Prev, line2Prev;
-
-    while (std::getline(gladFile, line1))
-    {
-        std::getline(ourFile, line2);
-
-        if (line1.substr(17) != line2.substr(17))
-        {
-            log(LogType::INFO, "DIFF: \n     %s\n     %s", line1.c_str(), line2.c_str());
-            log(LogType::INFO, "Prev: \n     %s\n     %s", line1Prev.c_str(), line2Prev.c_str());
-        }
-
-
-        line1Prev = line1;
-        line2Prev = line2;
-    }*/
-
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
@@ -202,7 +181,7 @@ int main(int argc, char** argv)
     
     std::string cartridgeName;
     if (argc == 1)
-        cartridgeName = dmgSystem.loadCartridge("roms/red.gb");
+        cartridgeName = dmgSystem.loadCartridge("roms/yellow.gbc");
     else
         cartridgeName = dmgSystem.loadCartridge(argv[argc - 1]);
 

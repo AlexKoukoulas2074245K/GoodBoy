@@ -35,6 +35,7 @@ Cartridge::Cartridge()
 	, secondaryBankNumberRegister_(0x0)
 	, bankingMode_(0x0)
 	, externalRamEnabled_(false)
+	, hasRTC_(false)
 {
 }
 
@@ -74,20 +75,23 @@ std::string Cartridge::loadCartridge(const char* filepath)
 		return " UNSUPPORTED";
 	}
 
+	hasRTC_ = type == 0x0F || type == 0x10;
+
 	cartridgeType_ = static_cast<CartridgeType>(type);
 	cartridgeROMSizeInKB_ = 32 * (1 << cartridgeRom_[CARTRIDGE_ROM_SIZE_ADDRESS]);
 	cartridgeExternalRAMSizeInKB_ = CARTRIDGE_RAM_SIZES[cartridgeRom_[CARTRIDGE_RAM_SIZE_ADDRESS]];
 
-	cartridgeExternalRam_ = new byte[cartridgeExternalRAMSizeInKB_ * 1000];
-	memset(cartridgeExternalRam_, 0xFF, cartridgeExternalRAMSizeInKB_);
-	FILE* eRamFile = fopen(saveFileName_.c_str(), "r");
+	cartridgeExternalRam_ = new byte[cartridgeExternalRAMSizeInKB_ * 1024];
+	memset(cartridgeExternalRam_, 0xFF, cartridgeExternalRAMSizeInKB_ * 1024);
+	FILE* eRamFile = fopen(saveFileName_.c_str(), "rb");
 	if (eRamFile != nullptr)
 	{
 		// get file size
 		fseek(eRamFile, 0, SEEK_END);
 		long size = ftell(eRamFile);
 		fseek(eRamFile, 0, SEEK_SET);
-		fread(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1000, eRamFile);
+		fread(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1024, eRamFile);
+		fclose(eRamFile);
 	}
 
 	return cartridgeName_ + " " + CARTRIDGE_TYPE_NAMES[type];
@@ -95,6 +99,7 @@ std::string Cartridge::loadCartridge(const char* filepath)
 
 void Cartridge::unloadCartridge()
 {
+	flushExternalRamToFile();
 	delete cartridgeRom_;
 	delete cartridgeExternalRam_;
 }
@@ -109,6 +114,7 @@ byte Cartridge::readByteAt(const word address) const
 		} break;
 
 		case CartridgeType::MBC1:
+		case CartridgeType::MBC1_RAM_BATTERY:
 		{
 			if (address <= 0x3FFF)
 			{
@@ -141,7 +147,8 @@ byte Cartridge::readByteAt(const word address) const
 			{
 				log(LogType::WARNING, "Unhandled rom read address %s", getHexWord(address).c_str());
 			}
-		}
+		} break;
+
 		case CartridgeType::MBC3_RAM_BATTERY:
 		{
 			if (address <= 0x3FFF)
@@ -156,14 +163,7 @@ byte Cartridge::readByteAt(const word address) const
 			{
 				if (externalRamEnabled_)
 				{
-					if (ramBankNumberRegister_ <= 3)
-					{
-						return cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000];
-					}
-					else if (ramBankNumberRegister_ >= 0x08 && ramBankNumberRegister_ <= 0x0C)
-					{
-						return rtcRegisters_[ramBankNumberRegister_ - 0x08];
-					}					
+					return cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000];
 				}
 				else
 				{
@@ -175,7 +175,38 @@ byte Cartridge::readByteAt(const word address) const
 			{
 				log(LogType::WARNING, "Unhandled rom read address %s", getHexWord(address).c_str());
 			}
-		}
+		} break;
+
+		case CartridgeType::MBC5_RAM_BATTERY:
+		{
+			if (address <= 0x3FFF)
+			{
+				return cartridgeRom_[address];
+			}
+			else if (address <= 0x7FFF)
+			{
+				if (secondaryBankNumberRegister_ == 0x1)
+					return cartridgeRom_[(address - 0x4000) + (0x100 | romBankNumberRegister_) * 0x4000];
+				else
+					return cartridgeRom_[(address - 0x4000) + romBankNumberRegister_ * 0x4000];
+			}
+			else if (address >= 0xA000 && address <= 0xBFFF)
+			{
+				if (externalRamEnabled_)
+				{
+					return cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000];
+				}
+				else
+				{
+					log(LogType::WARNING, "Reading from external RAM but not enabled %s byte. Returning garbage", getHexWord(address).c_str());
+					return 0xFF;
+				}
+			}
+			else
+			{
+				log(LogType::WARNING, "Unhandled rom read address %s", getHexWord(address).c_str());
+			}
+		} break;
 	}
 	return 0xFF;
 }
@@ -190,6 +221,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 		} break;
 
 		case CartridgeType::MBC1:
+		case CartridgeType::MBC1_RAM_BATTERY:
 		{
 			if (address <= 0x1FFF)
 			{
@@ -241,9 +273,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 		{
 			if (address <= 0x1FFF)
 			{
-				externalRamEnabled_ = (b & 0x0A) == 0x0A;	
-				if (b == 0x00) flushExternalRamToFile();
-					
+				externalRamEnabled_ = (b & 0x0A) == 0x0A;										
 			}
 			else if (address <= 0x3FFF)
 			{
@@ -270,15 +300,56 @@ void Cartridge::writeByteAt(const word address, const byte b)
 			else if (address >= 0xA000 && address <= 0xBFFF)
 			{
 				if (externalRamEnabled_)
+				{					
+					cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000] = b;										
+				}
+				else
 				{
-					if (ramBankNumberRegister_ <= 3)
-					{
-						cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000] = b;
-					}
-					else if (ramBankNumberRegister_ >= 0x08 && ramBankNumberRegister_ <= 0x0C)
-					{
-						rtcRegisters_[ramBankNumberRegister_ - 0x08] = b;
-					}
+					log(LogType::WARNING, "Writing to external ram address %s byte %s but ERAM not enabled. Ignoring write", getHexWord(address).c_str(), getHexByte(b).c_str());
+				}
+			}
+			else
+			{
+				log(LogType::WARNING, "Unhandled rom write address %s byte %s", getHexWord(address).c_str(), getHexByte(b).c_str());
+			}
+		} break;
+
+		case CartridgeType::MBC5_RAM_BATTERY:
+		{
+			if (address <= 0x1FFF)
+			{
+				externalRamEnabled_ = (b & 0x0A) == 0x0A;
+			}
+			else if (address <= 0x2FFF)
+			{
+				
+				// Lower 8 bit rom bank register.
+				romBankNumberRegister_ = b;				
+
+				// If this register is set to 0x00, it behaves as if it is set to 0x01
+				if (b == 0x0) romBankNumberRegister_ = 0x1;
+			}
+			else if (address <= 0x3FFF)
+			{
+				// This 1 - bit register (range $01 - $7F) selects the upper bit ROM bank number.
+				secondaryBankNumberRegister_ = b & 0x1;
+			}
+			else if (address <= 0x5FFF)
+			{
+				if (b <= 0x0F)
+				{
+					ramBankNumberRegister_ = b;
+				}
+				else
+				{
+					log(LogType::WARNING, "Unhandled rom write address %s byte %s", getHexWord(address).c_str(), getHexByte(b).c_str());
+				}
+			}
+			else if (address >= 0xA000 && address <= 0xBFFF)
+			{
+				if (externalRamEnabled_)
+				{
+					cartridgeExternalRam_[(address - 0xA000) + ramBankNumberRegister_ * 0x2000] = b;
 				}
 				else
 				{
@@ -297,9 +368,10 @@ void Cartridge::setSaveFilename(const char* filepath)
 {
 	saveFileName_.clear();
 	std::string path(filepath);
-	for (auto i = path.size() - 1; i >= 0; --i)
-	{
-		if (path[i] == '/' || path[i] == '\\') break;
+	assert(path.size() >= 5 && "Filepath too small");
+
+	for (int i = static_cast<int>(path.size()) - 4; i >= 0; --i)
+	{		
 		saveFileName_ = path[i] + saveFileName_;
 	}
 
@@ -308,10 +380,19 @@ void Cartridge::setSaveFilename(const char* filepath)
 
 void Cartridge::flushExternalRamToFile()
 {
-	if (cartridgeExternalRAMSizeInKB_ > 0)
+	switch (cartridgeType_)
 	{
-		FILE* file = fopen(saveFileName_.c_str(), "w");
-		fwrite(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1000, file);
-		fclose(file);
+		case CartridgeType::MBC1_RAM_BATTERY:
+		case CartridgeType::MBC3_RAM_BATTERY:
+		case CartridgeType::MBC5_RAM_BATTERY:
+		{
+			if (cartridgeExternalRAMSizeInKB_ > 0 && !externalRamEnabled_)
+			{
+				FILE* file = fopen(saveFileName_.c_str(), "wb");
+				fwrite(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1024, file);
+				fclose(file);
+			}
+		} break;
+		default: break;
 	}
 }

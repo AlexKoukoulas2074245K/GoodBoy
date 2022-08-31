@@ -13,9 +13,10 @@ public:
 		ROM_ONLY = 0x0,
 		MBC1 = 0x1,
 		//MBC1_RAM = 0x2,
-		//MBC1_RAM_BATTERY = 0x3,
+		MBC1_RAM_BATTERY = 0x3,
 		MBC3_RAM_BATTERY = 0x13,
-		UNSUPPORTED = 0x14,
+		MBC5_RAM_BATTERY = 0x1b,
+		UNSUPPORTED = 0x1c,
 	};
 
 public:
@@ -36,8 +37,7 @@ private:
 	byte* cartridgeRom_;
 	byte* cartridgeExternalRam_;
 	std::string cartridgeName_;
-	std::string saveFileName_;
-	byte rtcRegisters_[5];
+	std::string saveFileName_;	
 	CartridgeType cartridgeType_;
 	int cartridgeROMSizeInKB_;
 	int cartridgeExternalRAMSizeInKB_;
@@ -45,6 +45,7 @@ private:
 	byte ramBankNumberRegister_;
 	byte secondaryBankNumberRegister_;
 	byte bankingMode_;
+	bool hasRTC_;
 	bool externalRamEnabled_;
 };
 
