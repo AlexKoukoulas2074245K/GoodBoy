@@ -11,3 +11,6 @@ Tested Zelda Link's Awakening, Pokemon Red, Tetris, Speedy Gonzalez, and many ot
 
 <img src="https://user-images.githubusercontent.com/10456734/187683397-a7982db3-10ec-44e9-a168-340bba804979.png" width="250" height="250"> <img src="https://user-images.githubusercontent.com/10456734/187682634-845a75bb-8d65-4b03-b834-f65a89dab299.png" width="250" height="250"> <img src="https://user-images.githubusercontent.com/10456734/187682905-b352fc11-6195-4218-abd4-0d74c25f1660.png" width="250" height="250">
 
+# Outstanding Work
+* Investigate VRAM bug in Super Mario Land
+* Implement support for Game Boy Color games, and potentially MBC5
