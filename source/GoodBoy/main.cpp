@@ -187,7 +187,7 @@ int main(int argc, char** argv)
 
     gameboySystem.setVBlankCallback(VBlankCallback);
 
-    SDL_SetWindowTitle(spWindow.get(), ("GBR: " + cartridgeName).c_str());
+    SDL_SetWindowTitle(spWindow.get(), ("GoodBoy: " + cartridgeName).c_str());
 
     Uint64 frameStart = SDL_GetPerformanceCounter();
     while (isRunning)
