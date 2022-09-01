@@ -130,6 +130,27 @@ static constexpr word VRAM_BANK_ADDRESS = 0xFF4F;
 
 
 /*
+	This register is used to address a byte in the CGB’s background palette RAM. Since there are 8 palettes, 8 palettes × 4 colors/palette × 2 bytes/color = 64 bytes can be addressed.
+
+	First comes BGP0 color number 0, then BGP0 color number 1, BGP0 color number 2, BGP0 color number 3, BGP1 color number 0, and so on. 
+	Thus, address $03 allows accessing the second (upper) byte of BGP0 color #1 via BCPD, which contains the color’s blue and upper green bits.
+*/
+static constexpr word CGB_BACKGROUND_PALETTE_INDEX_ADDRESS = 0xFF68;
+static constexpr word CGB_OBJ_PALETTE_INDEX_ADDRESS        = 0xFF6A;
+
+
+/*
+	This register allows to read/write data to the CGBs background palette memory, addressed through BCPS/BGPI. Each color is stored as little-endian RGB555:
+
+	Bit 0-4   Red Intensity   ($00-1F)
+	Bit 5-9   Green Intensity ($00-1F)
+	Bit 10-14 Blue Intensity  ($00-1F)
+	Much like VRAM, data in palette memory cannot be read or written during the time when the PPU is reading from it, that is, Mode 3.
+*/
+static constexpr word CGB_BACKGROUND_PALETTE_DATA_ADDRESS = 0xFF69;
+static constexpr word CGB_OBJ_PALETTE_DATA_ADRESS         = 0xFF6B;
+
+/*
 	System Core Colors
 */
 static const byte GAMEBOY_NATIVE_COLORS[4][4] =
@@ -158,6 +179,8 @@ Display::Display()
 	, obj1Palette_(0)
 	, winx_(0), winy_(0)
 	, cgbVramBank_(0xFE)
+	, cgbBackgroundPaletteIndex_(0)
+	, cgbOBJPaletteIndex_(0)
 	, cgbType_(Cartridge::CgbType::DMG)
 	, respectIllegalReadsWrites_(true)
 {
@@ -244,6 +267,7 @@ void Display::update(const unsigned int spentCpuCycles)
 				cb_(finalSDLPixels_);
 				
 				memset(bgAndWindowColorIndices, 0, sizeof(bgAndWindowColorIndices));
+				memset(cgbBgTopLevelPriorityPixels, false, sizeof(cgbBgTopLevelPriorityPixels));
 				memset(spriteColorIndices, 0, sizeof(spriteColorIndices));
 
 				SET_DISPLAY_MODE(DISPLAY_MODE_SEARCHING_OAM);
@@ -304,7 +328,7 @@ byte Display::readByteAt(const word address) const
 		if (cgbType_ == Cartridge::CgbType::DMG)
 			return mem_[address];
 		else
-			return cgbVram_[(address - Memory::VRAM_START_ADDRESS) + cgbVramBank_ * 0x2000];
+			return cgbVram_[(address - Memory::VRAM_START_ADDRESS) + (cgbVramBank_ & 0x1) * 0x2000];
 	}
 	if (address >= Memory::OAM_START_ADDRESS && address <= Memory::OAM_END_ADDRESS)
 	{
@@ -331,6 +355,10 @@ byte Display::readByteAt(const word address) const
 		case WIN_X_ADDRESS: return winx_;
 		case WIN_Y_ADDRESS: return winy_;
 		case VRAM_BANK_ADDRESS: return cgbVramBank_;
+		case CGB_BACKGROUND_PALETTE_INDEX_ADDRESS: return cgbBackgroundPaletteIndex_;
+		case CGB_BACKGROUND_PALETTE_DATA_ADDRESS: return cgbBackgroundPaletteRam_[cgbBackgroundPaletteIndex_ & (0x3F)];
+		case CGB_OBJ_PALETTE_INDEX_ADDRESS: return cgbOBJPaletteIndex_;
+		case CGB_OBJ_PALETTE_DATA_ADRESS: return cgbOBJPaletteRam_[cgbOBJPaletteIndex_ & (0x3F)];
 		default: log(LogType::WARNING, "Display::readByteAt Unknown read at %s", getHexWord(address).c_str());
 	}
 	return 0xFF;
@@ -346,10 +374,13 @@ void Display::writeByteAt(const word address, const byte b)
 			if (respectIllegalReadsWrites_) return;
 		}
 
+		if (b != 0x0)
+			const auto b = false;
+
 		if (cgbType_ == Cartridge::CgbType::DMG)
 			mem_[address] = b;
 		else
-			cgbVram_[(address - Memory::VRAM_START_ADDRESS) + cgbVramBank_ * 0x2000] = b;
+			cgbVram_[(address - Memory::VRAM_START_ADDRESS) + (cgbVramBank_ & 0x1) * 0x2000] = b;
 		return;
 	}
 	if (address >= Memory::OAM_START_ADDRESS && address <= Memory::OAM_END_ADDRESS)
@@ -396,6 +427,40 @@ void Display::writeByteAt(const word address, const byte b)
 		case WIN_X_ADDRESS: winx_ = b; break;
 		case WIN_Y_ADDRESS: winy_ = b; break;
 		case VRAM_BANK_ADDRESS: cgbVramBank_ = ((b & 0x1) == 0x1) ? 0xFF : 0xFE; break; // Only set bottom bit for selected vram bank
+		case CGB_BACKGROUND_PALETTE_INDEX_ADDRESS: cgbBackgroundPaletteIndex_ = b; break;
+		case CGB_OBJ_PALETTE_INDEX_ADDRESS: cgbOBJPaletteIndex_ = b; break;
+		case CGB_BACKGROUND_PALETTE_DATA_ADDRESS: 
+		{
+			cgbBackgroundPaletteRam_[cgbBackgroundPaletteIndex_ & (0x3F)] = b;
+
+			// Auto icrement index if bit 7 is set
+			if (IS_BIT_SET(7, cgbBackgroundPaletteIndex_))
+			{
+				cgbBackgroundPaletteIndex_++;
+
+				// If the auto increment exceeded max index (3F), then just unset bit 6
+				if ((cgbBackgroundPaletteIndex_ & (0x3F)) == 0x00)
+				{
+					RESET_BIT(6, cgbBackgroundPaletteIndex_);
+				}
+			}
+		} break;
+		case CGB_OBJ_PALETTE_DATA_ADRESS: 
+		{
+			cgbOBJPaletteRam_[cgbOBJPaletteIndex_ & (0x3F)] = b;
+
+			// Auto icrement index if bit 7 is set
+			if (IS_BIT_SET(7, cgbOBJPaletteIndex_))
+			{
+				cgbOBJPaletteIndex_++;
+
+				// If the auto increment exceeded max index (3F), then just unset bit 6
+				if ((cgbOBJPaletteIndex_ & (0x3F)) == 0x00)
+				{
+					RESET_BIT(6, cgbOBJPaletteIndex_);
+				}
+			}			
+		} break;
 		default: log(LogType::WARNING, "Display::writeByteAt Unknown write %s at %s", getHexByte(b).c_str(), getHexWord(address).c_str());
 	}
 }
@@ -462,29 +527,94 @@ void Display::renderBackgroundScanline()
 		word bgXCoord = wrappedPixelXCoord >> 3;                                   // Transforms X coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
 		word bgYCoord = wrappedPixelYCoord >> 3;                                   // Transforms Y coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
 
-		word tileId = mem_[startingBgMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
-		word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;       // Find tile address based on Tile ID. Each tile data occupies 16 bytes
+		if (cgbType_ != Cartridge::CgbType::DMG)
+		{
+			// Bit 7    BG-to-OAM Priority         (0=Use OAM Priority bit, 1=BG Priority)
+			// Bit 6    Vertical Flip(0 = Normal, 1 = Mirror vertically)
+			// Bit 5    Horizontal Flip(0 = Normal, 1 = Mirror horizontally)
+			// Bit 4    Not used
+			// Bit 3    Tile VRAM Bank number(0 = Bank 0, 1 = Bank 1)
+			// Bit 2 - 0  Background Palette number(BGP0 - 7)
+			byte tileAttributes = cgbVram_[0x3800 + ((bgYCoord * 0x20) + bgXCoord)];
+	
+			bool bgToOAMPriority = IS_BIT_SET(7, tileAttributes);
+			bool verticalFlip = IS_BIT_SET(6, tileAttributes);
+			bool horizontalFlip = IS_BIT_SET(5, tileAttributes);
+			bool useTileDataFromVRAMBank0 = !IS_BIT_SET(3, tileAttributes);
+			byte cgbPaletteNumber = tileAttributes & 0x7;
 
-		if (signedTileAddressing)
-			tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sbyte>(tileId));
+			word tileId = cgbVram_[0x1800 + startingBgMapAddress + ((bgYCoord * 0x20) + bgXCoord) - 0x9800]; // Find tile id based on the above coords
+			
+			word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;           // Find tile address based on Tile ID. Each tile data occupies 16 bytes
 
-		byte tileCol = wrappedPixelXCoord % 8; // Get tile data col to draw
-		byte tileRow = wrappedPixelYCoord % 8; // Get tile data row to draw
+			if (signedTileAddressing)
+				tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sbyte>(tileId));
 
-		word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
-		byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
-		byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
+			if (!useTileDataFromVRAMBank0)
+				tileAddress = tileAddress - 0x8000 + 0x2000; // Remove 0x800 offset for tile data, but add vram bank 1's offset as well
+			else
+				tileAddress = tileAddress - 0x8000;
 
-		byte colorIndexLSB = (targetTileDataFirstByte >> (7 - tileCol)) & 0x01;  // Get target bit from first byte
-		byte colorIndexMSB = (targetTileDataSecondByte >> (7 - tileCol)) & 0x01; // Get target bit from second byte
+			byte tileCol = horizontalFlip ? (7 - (wrappedPixelXCoord % 8)) : wrappedPixelXCoord % 8; // Get tile data col to draw
+			byte tileRow = verticalFlip ? (7 - (wrappedPixelYCoord % 8)) : wrappedPixelYCoord % 8; // Get tile data row to draw	
 
-		byte colorIndex = colorIndexMSB << 1 | colorIndexLSB; // Assemble final color index
+			word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
+			byte targetTileDataFirstByte = cgbVram_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
+			byte targetTileDataSecondByte = cgbVram_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
+			
+			byte colorIndexLSB = (targetTileDataFirstByte >> (7 - tileCol)) & 0x01;  // Get target bit from first byte
+			byte colorIndexMSB = (targetTileDataSecondByte >> (7 - tileCol)) & 0x01; // Get target bit from second byte
+		
+			byte colorIndex = colorIndexMSB << 1 | colorIndexLSB; // Assemble final color index
 
-		bgAndWindowColorIndices[ly_ * 160 + i] = palette[colorIndex];
-		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][0];
-		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][1];
-		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][2];
-		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][3];
+			bgAndWindowColorIndices[ly_ * 160 + i] = colorIndex;
+			cgbBgTopLevelPriorityPixels[ly_ * 160 + i] = bgToOAMPriority;				
+
+			// Palette Ram is 64 bytes. Each palette 0..7 takes up 8 bytes.
+			// PaletteN 8 bytes distribution:
+			// byte 0 - Color 0 high byte (blue & upper green data) where -> bits 6,5,4,3,2 (blue) bits 1,0 (high green)
+			// byte 1 - Color 0 low byte  (lower green data & red)  where -> bits 7,6,5 (low green) bits 4,3,2,1,0 (red)
+			// byte 2 - Color 1 high byte (blue & upper green data) where -> bits 6,5,4,3,2 (blue) bits 1,0 (high green)
+			// .....
+			// byte 7 - Color 3 low byte (lower green data & red)   where -> bits 7,6,5 (low green) bits 4,3,2,1,0 (red)
+			byte colorHighByte = cgbBackgroundPaletteRam_[cgbPaletteNumber * 8 + (colorIndex * 2) + 1]; // Little endian which is why the high byte is on position n + 1
+			byte colorLowByte  = cgbBackgroundPaletteRam_[cgbPaletteNumber * 8 + (colorIndex * 2) + 0];
+
+			float fracBlueIntensity  = ((colorHighByte & 0x7C) >> 2) / static_cast<float>(0x1F);
+			float fracGreenIntensity = ((((colorHighByte & 0x3) << 3) | ((colorLowByte & 0xE0) >> 5))) / static_cast<float>(0x1F);
+			float fracRedIntensity   = ((colorLowByte & 0x1F) >> 0) / static_cast<float>(0x1F);
+
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = 0xFF;                                         // A
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = static_cast<byte>(fracBlueIntensity * 0xFF);  // B
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = static_cast<byte>(fracGreenIntensity * 0xFF); // G
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = static_cast<byte>(fracRedIntensity * 0xFF);   // R
+		}
+		else // DMG
+		{
+			word tileId = mem_[startingBgMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
+			word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;       // Find tile address based on Tile ID. Each tile data occupies 16 bytes
+
+			if (signedTileAddressing)
+				tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sbyte>(tileId));
+
+			byte tileCol = wrappedPixelXCoord % 8; // Get tile data col to draw
+			byte tileRow = wrappedPixelYCoord % 8; // Get tile data row to draw		
+
+			word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
+			byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
+			byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
+
+			byte colorIndexLSB = (targetTileDataFirstByte >> (7 - tileCol)) & 0x01;  // Get target bit from first byte
+			byte colorIndexMSB = (targetTileDataSecondByte >> (7 - tileCol)) & 0x01; // Get target bit from second byte
+
+			byte colorIndex = colorIndexMSB << 1 | colorIndexLSB; // Assemble final color index
+
+			bgAndWindowColorIndices[ly_ * 160 + i] = palette[colorIndex];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][0];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][1];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][2];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][3];
+		}
 	}
 }
 
@@ -517,32 +647,97 @@ void Display::renderWindowScanline()
 		word bgXCoord = wrappedPixelXCoord >> 3;                                   // Transforms X coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
 		word bgYCoord = wrappedPixelYCoord >> 3;                                   // Transforms Y coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
 
-		word tileId = mem_[startingWindowMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
-		word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;       // Find tile address based on Tile ID. Each tile data occupies 16 bytes
+		if (cgbType_ != Cartridge::CgbType::DMG)
+		{
+			// Bit 7    BG-to-OAM Priority         (0=Use OAM Priority bit, 1=BG Priority)
+			// Bit 6    Vertical Flip(0 = Normal, 1 = Mirror vertically)
+			// Bit 5    Horizontal Flip(0 = Normal, 1 = Mirror horizontally)
+			// Bit 4    Not used
+			// Bit 3    Tile VRAM Bank number(0 = Bank 0, 1 = Bank 1)
+			// Bit 2 - 0  Background Palette number(BGP0 - 7)
+			byte tileAttributes = cgbVram_[0x3800 + ((bgYCoord * 0x20) + bgXCoord)];
 
-		if (signedTileAddressing)
-			tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sbyte>(tileId));
+			bool bgToOAMPriority = IS_BIT_SET(7, tileAttributes);
+			bool verticalFlip = IS_BIT_SET(6, tileAttributes);
+			bool horizontalFlip = IS_BIT_SET(5, tileAttributes);
+			bool useTileDataFromVRAMBank0 = !IS_BIT_SET(3, tileAttributes);
+			byte cgbPaletteNumber = tileAttributes & 0x7;
 
-		byte tileCol = wrappedPixelXCoord % 8; // Get tile data col to draw
-		byte tileRow = wrappedPixelYCoord % 8; // Get tile data row to draw
+			word tileId = cgbVram_[0x1800 + startingWindowMapAddress + ((bgYCoord * 0x20) + bgXCoord) - 0x9800]; // Find tile id based on the above coords
 
-		word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
-		byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
-		byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
+			word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;           // Find tile address based on Tile ID. Each tile data occupies 16 bytes
 
-		byte colorIndexLSB = (targetTileDataFirstByte >> (7 - tileCol)) & 0x01;  // Get target bit from first byte
-		byte colorIndexMSB = (targetTileDataSecondByte >> (7 - tileCol)) & 0x01; // Get target bit from second byte
+			if (signedTileAddressing)
+				tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sbyte>(tileId));
 
-		byte colorIndex = colorIndexMSB << 1 | colorIndexLSB; // Assemble final color index
+			if (!useTileDataFromVRAMBank0)
+				tileAddress = tileAddress - 0x8000 + 0x2000; // Remove 0x800 offset for tile data, but add vram bank 1's offset as well
+			else
+				tileAddress = tileAddress - 0x8000;
 
-		bgAndWindowColorIndices[ly_ * 160 + i] = palette[colorIndex];
-		
-		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][0];
-		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][1];
-		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][2];
-		finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][3];
+			byte tileCol = horizontalFlip ? (7 - (wrappedPixelXCoord % 8)) : wrappedPixelXCoord % 8; // Get tile data col to draw
+			byte tileRow = verticalFlip ? (7 - (wrappedPixelYCoord % 8)) : wrappedPixelYCoord % 8; // Get tile data row to draw	
 
-		windowScanlineRendered = true;
+			word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
+			byte targetTileDataFirstByte = cgbVram_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
+			byte targetTileDataSecondByte = cgbVram_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
+
+			byte colorIndexLSB = (targetTileDataFirstByte >> (7 - tileCol)) & 0x01;  // Get target bit from first byte
+			byte colorIndexMSB = (targetTileDataSecondByte >> (7 - tileCol)) & 0x01; // Get target bit from second byte
+
+			byte colorIndex = colorIndexMSB << 1 | colorIndexLSB; // Assemble final color index
+
+			bgAndWindowColorIndices[ly_ * 160 + i] = colorIndex;
+			cgbBgTopLevelPriorityPixels[ly_ * 160 + i] = bgToOAMPriority;
+
+			// Palette Ram is 64 bytes. Each palette 0..7 takes up 8 bytes.
+			// PaletteN 8 bytes distribution:
+			// byte 0 - Color 0 high byte (blue & upper green data) where -> bits 6,5,4,3,2 (blue) bits 1,0 (high green)
+			// byte 1 - Color 0 low byte  (lower green data & red)  where -> bits 7,6,5 (low green) bits 4,3,2,1,0 (red)
+			// byte 2 - Color 1 high byte (blue & upper green data) where -> bits 6,5,4,3,2 (blue) bits 1,0 (high green)
+			// .....
+			// byte 7 - Color 3 low byte (lower green data & red)   where -> bits 7,6,5 (low green) bits 4,3,2,1,0 (red)
+			byte colorHighByte = cgbBackgroundPaletteRam_[cgbPaletteNumber * 8 + (colorIndex * 2) + 1];
+			byte colorLowByte = cgbBackgroundPaletteRam_[cgbPaletteNumber * 8 + (colorIndex * 2) + 0];
+
+			float fracBlueIntensity = ((colorHighByte & 0x7C) >> 2) / static_cast<float>(0x1F);
+			float fracGreenIntensity = ((((colorHighByte & 0x3) << 3) | ((colorLowByte & 0xE0) >> 5))) / static_cast<float>(0x1F);
+			float fracRedIntensity = ((colorLowByte & 0x1F) >> 0) / static_cast<float>(0x1F);
+
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = 0xFF;                                         // A
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = static_cast<byte>(fracBlueIntensity * 0xFF);  // B
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = static_cast<byte>(fracGreenIntensity * 0xFF); // G
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = static_cast<byte>(fracRedIntensity * 0xFF);   // R
+		}
+		else // DMG
+		{
+			word tileId = mem_[startingWindowMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
+			word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;       // Find tile address based on Tile ID. Each tile data occupies 16 bytes
+
+			if (signedTileAddressing)
+				tileAddress = startingBgAndWindowTileDataAddress + (16 * static_cast<sbyte>(tileId));
+
+			byte tileCol = wrappedPixelXCoord % 8; // Get tile data col to draw
+			byte tileRow = wrappedPixelYCoord % 8; // Get tile data row to draw
+
+			word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
+			byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
+			byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
+
+			byte colorIndexLSB = (targetTileDataFirstByte >> (7 - tileCol)) & 0x01;  // Get target bit from first byte
+			byte colorIndexMSB = (targetTileDataSecondByte >> (7 - tileCol)) & 0x01; // Get target bit from second byte
+
+			byte colorIndex = colorIndexMSB << 1 | colorIndexLSB; // Assemble final color index
+
+			bgAndWindowColorIndices[ly_ * 160 + i] = palette[colorIndex];
+
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 0] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][0];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 1] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][1];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][2];
+			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][3];
+
+			windowScanlineRendered = true;
+		}
 	}
 
 	if (windowScanlineRendered)
@@ -583,6 +778,8 @@ void Display::renderOBJsScanline()
 		bool isHorFlipped       = IS_BIT_SET(5, objFlags);
 		bool isVerFlipped       = IS_BIT_SET(6, objFlags);
 		bool useObjPalette0     = !IS_BIT_SET(4, objFlags);
+		bool cgbUseVramBank0    = !IS_BIT_SET(3, objFlags);
+		byte cgbPaletteNumber   = objFlags & 0x07;
 
 		word tileAddress = startingOBJTileDataAddress + 16 * objTileIndex; // Find tile address based on Tile ID. Each tile data occupies 16 bytes
 
@@ -616,6 +813,12 @@ void Display::renderOBJsScanline()
 		word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
 		byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
 		byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1]; // Get second byte of tile data row (most significant bits for the final color index)
+
+		if (cgbType_ != Cartridge::CgbType::DMG)
+		{
+			targetTileDataFirstByte = cgbUseVramBank0 ? cgbVram_[targetTileRowAddress - 0x8000] : cgbVram_[(targetTileRowAddress - 0x8000) + 0x2000];
+			targetTileDataSecondByte = cgbUseVramBank0 ? cgbVram_[targetTileRowAddress - 0x8000 + 1] : cgbVram_[(targetTileRowAddress - 0x8000) + 0x2000 + 1];
+		}
 
 		for (int j = 0; j < 8; ++j)
 		{
@@ -652,10 +855,40 @@ void Display::renderOBJsScanline()
 				continue;
 			}
 
-			finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 0] = GAMEBOY_NATIVE_COLORS[finalColorIndex][0];
-			finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 1] = GAMEBOY_NATIVE_COLORS[finalColorIndex][1];
-			finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 2] = GAMEBOY_NATIVE_COLORS[finalColorIndex][2];
-			finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 3] = GAMEBOY_NATIVE_COLORS[finalColorIndex][3];
+			if (cgbType_ == Cartridge::CgbType::DMG)
+			{
+				finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 0] = GAMEBOY_NATIVE_COLORS[finalColorIndex][0];
+				finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 1] = GAMEBOY_NATIVE_COLORS[finalColorIndex][1];
+				finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 2] = GAMEBOY_NATIVE_COLORS[finalColorIndex][2];
+				finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 3] = GAMEBOY_NATIVE_COLORS[finalColorIndex][3];
+			}
+			else
+			{
+				// If a top level priority bg tile is at this pixel, skip
+				if (cgbBgTopLevelPriorityPixels[pixelCoordY * 160 + pixelCoordX])
+				{
+					continue;
+				}
+
+				// Palette Ram is 64 bytes. Each palette 0..7 takes up 8 bytes.
+				// PaletteN 8 bytes distribution:
+				// byte 0 - Color 0 low byte (lower green data & red)  where -> bits 7,6,5 (low green) bits 4,3,2,1,0 (red)
+				// byte 1 - Color 0 high byte (blue & upper green data) where -> bits 6,5,4,3,2 (blue) bits 1,0 (high green)
+				// byte 2 - Color 1 low byte (lower green data & red)  where -> bits 7,6,5 (low green) bits 4,3,2,1,0 (red)
+				// .....
+				// byte 7 - Color 3 high byte (blue & upper green data) where -> bits 6,5,4,3,2 (blue) bits 1,0 (high green)
+				byte colorHighByte = cgbOBJPaletteRam_[cgbPaletteNumber * 8 + (colorIndex * 2) + 1];
+				byte colorLowByte  = cgbOBJPaletteRam_[cgbPaletteNumber * 8 + (colorIndex * 2)];
+
+				float fracBlueIntensity  = ((colorHighByte & 0x7C) >> 2) / static_cast<float>(0x1F);
+				float fracGreenIntensity = (((colorHighByte & 0x3) << 3) | ((colorLowByte & 0xE0) >> 5)) / static_cast<float>(0x1F);
+				float fracRedIntensity   = ((colorLowByte  & 0x1F) >> 0) / static_cast<float>(0x1F);
+
+				finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 0] = 0xFF;                                         // A
+				finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 1] = static_cast<byte>(fracBlueIntensity * 0xFF);  // B
+				finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 2] = static_cast<byte>(fracGreenIntensity * 0xFF); // G
+				finalSDLPixels_[(ly_ * 160 * 4) + (pixelCoordX * 4) + 3] = static_cast<byte>(fracRedIntensity * 0xFF);   // R
+			}
 		}
 	}
 }

@@ -42,6 +42,7 @@ std::string System::loadCartridge(const char* filename)
 {
 	const auto& cartridgeName = cartridge_.loadCartridge(filename);
 	mem_.setCartridgeCgbType(cartridge_.getCgbType());
+	display_.setCartridgeCgbType(cartridge_.getCgbType());
 	return cartridgeName;
 }
 

@@ -1,4 +1,4 @@
-# GBR
+# GoodBoy
 Game Boy Emulator written in C++ & SDL2. Sound is supported too, although the bulk of the work was taken by a PR of another emulator (https://github.com/Dooskington/GameLad/pull/111)
 
 # Emulation Testing

@@ -150,7 +150,7 @@ int main(int argc, char** argv)
     // Create window
     spWindow = std::unique_ptr<SDL_Window, SDLWindowDeleter>(
         SDL_CreateWindow(
-            "GBR",
+            "GoodBoy",
             SDL_WINDOWPOS_UNDEFINED,
             SDL_WINDOWPOS_UNDEFINED,
             windowWidth * windowScale, // Original = 160
@@ -181,7 +181,7 @@ int main(int argc, char** argv)
     
     std::string cartridgeName;
     if (argc == 1)
-        cartridgeName = gameboySystem.loadCartridge("roms/red.gb");
+        cartridgeName = gameboySystem.loadCartridge("roms/yellow.gbc");
     else
         cartridgeName = gameboySystem.loadCartridge(argv[argc - 1]);
 

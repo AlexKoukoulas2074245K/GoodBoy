@@ -49,7 +49,7 @@ public:
 	static constexpr word VRAM_DMA_START_ADDRESS         = 0xFF51; // CGB+
 	static constexpr word VRAM_DMA_END_ADDRESS           = 0xFF55; // CGB+
 	static constexpr word BG_OBJ_PALETTES_START_ADDRESS  = 0xFF68; // CGB+
-	static constexpr word BG_OBJ_PALETTES_END_ADDRESS    = 0xFF69; // CGB+
+	static constexpr word BG_OBJ_PALETTES_END_ADDRESS    = 0xFF6B; // CGB+
 	static constexpr word OBJECT_PRIORITY_ADDRESS        = 0xFF6C; // CGB+
 	static constexpr word WRAM_BANK_SELECT_ADDRESS       = 0xFF70; // CGB+
 	static constexpr word IE_ADDRESS                     = 0xFFFF;

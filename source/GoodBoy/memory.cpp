@@ -189,7 +189,7 @@ byte Memory::readAt(const word address) const
 	else if (address >= VRAM_DMA_START_ADDRESS && address <= VRAM_DMA_END_ADDRESS)
 		log(LogType::INFO, ("Reading from " + getHexWord(address) + ": at VRAM_DMA (" + getHexWord(VRAM_DMA_START_ADDRESS) + "-" + getHexWord(VRAM_DMA_END_ADDRESS) + ")").c_str());
 	else if (address >= BG_OBJ_PALETTES_START_ADDRESS && address <= BG_OBJ_PALETTES_END_ADDRESS)
-		log(LogType::INFO, ("Reading from " + getHexWord(address) + ": at BJ_OBJ_PALLETES (" + getHexWord(BG_OBJ_PALETTES_START_ADDRESS) + "-" + getHexWord(BG_OBJ_PALETTES_END_ADDRESS) + ")").c_str());
+		return display_.readByteAt(address);
 	else if (address == WRAM_BANK_SELECT_ADDRESS && cgbType_ != Cartridge::CgbType::DMG) 
 		return cgbWramBank_;
 
@@ -284,7 +284,10 @@ void Memory::writeAt(const word address, const byte b)
 	else if (address >= VRAM_DMA_START_ADDRESS && address <= VRAM_DMA_END_ADDRESS)
 		log(LogType::INFO, ("Writing: " + getHexByte(b) + " at  " + getHexWord(address) + " VRAM_DMA (" + getHexWord(VRAM_DMA_START_ADDRESS) + "-" + getHexWord(VRAM_DMA_END_ADDRESS) + "). CGB Only.").c_str());
 	else if (address >= BG_OBJ_PALETTES_START_ADDRESS && address <= BG_OBJ_PALETTES_END_ADDRESS)
-		log(LogType::INFO, ("Writing: " + getHexByte(b) + " at  " + getHexWord(address) + " BJ_OBJ_PALLETES (" + getHexWord(BG_OBJ_PALETTES_START_ADDRESS) + "-" + getHexWord(BG_OBJ_PALETTES_END_ADDRESS) + "). CGB Only.").c_str());
+	{
+		display_.writeByteAt(address, b);
+		return;
+	}
 	else if (address == OBJECT_PRIORITY_ADDRESS)
 		log(LogType::INFO, ("Writing: " + getHexByte(b) + " at  " + getHexWord(address) + " OBJECT PRIORITY (" + getHexWord(OBJECT_PRIORITY_ADDRESS) + "). CGB Only.").c_str());
 	else if (address == WRAM_BANK_SELECT_ADDRESS && cgbType_ != Cartridge::CgbType::DMG)

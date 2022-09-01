@@ -37,8 +37,11 @@ private:
 
 private:
 	byte cgbVram_[0x4000];
+	byte cgbBackgroundPaletteRam_[0x40];
+	byte cgbOBJPaletteRam_[0x40];
 	byte finalSDLPixels_[160 * 144 * 4];
 	byte bgAndWindowColorIndices[160 * 144];
+	bool cgbBgTopLevelPriorityPixels[160 * 144];
 	byte spriteColorIndices[160 * 144];
 	std::vector<word> selectedOBJAddressesForCurrentScanline_;
 	CPU* cpu_;
@@ -59,6 +62,8 @@ private:
 	byte obj1Palette_;
 	byte winx_, winy_;
 	byte cgbVramBank_;
+	byte cgbBackgroundPaletteIndex_;
+	byte cgbOBJPaletteIndex_;
 	Cartridge::CgbType cgbType_;
 	bool respectIllegalReadsWrites_;
 };

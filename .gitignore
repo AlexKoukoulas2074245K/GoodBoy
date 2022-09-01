@@ -1,11 +1,11 @@
 .vs/
-source/GBR/x64
+source/GoodBoy/x64
 source/x64
 source/Debug
 source/Release
-source/GBR/Debug
-source/GBR/Release
-source/GBR/roms
+source/GoodBoy/Debug
+source/GoodBoy/Release
+source/GoodBoy/roms
 *.vcxproj
 *.filters
 *.user
