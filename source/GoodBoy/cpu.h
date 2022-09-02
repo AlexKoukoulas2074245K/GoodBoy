@@ -7,6 +7,7 @@
 #include <vector>
 
 class Memory;
+class Display;
 class CPU final
 {
 public:
@@ -17,7 +18,7 @@ public:
 	static constexpr byte JOYPAD_INTERRUPT_BIT   = 4;
 
 public:
-	CPU(Memory& mem);
+	CPU(Memory& mem, Display& display);
 	
 	unsigned int executeNextInstruction();
 	unsigned int handleInterrupts();
@@ -132,6 +133,7 @@ private:
 	static constexpr byte REG_SP_INDEX = 6;
 
 	Memory& mem_;
+	Display& display_;
 	word registersAF_;
 	byte generalPurposeRegisters_[sizeof(word) * 4];  // BC, DE, HL, SP
 	std::vector<byte> currentInstructionOperands_;

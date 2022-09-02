@@ -130,6 +130,60 @@ static constexpr word VRAM_BANK_ADDRESS = 0xFF4F;
 
 
 /*
+	These two registers specify the address at which the transfer will read data from. Normally, this should be either in ROM, SRAM or WRAM,
+	thus either in range 0000-7FF0 or A000-DFF0. Trying to specify a source address in VRAM will cause garbage to be copied.
+
+	The four lower bits of this address will be ignored and treated as 0. (W)
+*/
+static constexpr word HDMA_SOURCE_START_HIGH_ADDRESS = 0xFF51;
+static constexpr word HDMA_SOURCE_START_LOW_ADDRESS  = 0xFF52;
+
+
+/*
+	These two registers specify the address within 8000-9FF0 to which the data will be copied. Only bits 12-4 are respected; others are ignored. 
+	The four lower bits of this address will be ignored and treated as 0.
+*/
+static constexpr word HDMA_DESTINATION_START_HIGH_ADDRESS = 0xFF53;
+static constexpr word HDMA_DESTINATION_START_LOW_ADDRESS  = 0xFF54;
+
+
+/*
+	When using this transfer method, all data is transferred at once. The execution of the program is halted until the transfer has completed. 
+	Note that the General Purpose DMA blindly attempts to copy the data, even if the LCD controller is currently accessing VRAM. 
+	So General Purpose DMA should be used only if the Display is disabled, or during VBlank, or (for rather short blocks) during HBlank. 
+	The execution of the program continues when the transfer has been completed, and FF55 then contains a value of FFh.
+
+	Bit 7 = 1 - HBlank DMA
+	The HBlank DMA transfers 10h bytes of data during each HBlank, that is, at LY=0-143, no data is transferred during VBlank (LY=144-153), but the transfer will then continue at LY=00. 
+	The execution of the program is halted during the separate transfers, but the program execution continues during the “spaces” between each data block. 
+	Note that the program should not change the Destination VRAM bank (FF4F), or the Source ROM/RAM bank (in case data is transferred from bankable memory) until the transfer has completed! 
+	(The transfer should be paused as described below while the banks are switched)
+
+	Reading from Register FF55 returns the remaining length (divided by 10h, minus 1), a value of 0FFh indicates that the transfer has completed. 
+	It is also possible to terminate an active HBlank transfer by writing zero to Bit 7 of FF55. In that case reading from FF55 will return how many 
+	$10 “blocks” remained (minus 1) in the lower 7 bits, but Bit 7 will be read as “1”. Stopping the transfer doesn’t set HDMA1-4 to $FF.
+
+	WARNING
+	HBlank DMA should not be started (write to FF55) during a HBlank period (STAT mode 0).
+
+	If the transfer’s destination address overflows, the transfer stops prematurely. 
+	The status of the registers if this happens still needs to be investigated.
+
+	Confirming if the DMA Transfer is Active
+	Reading Bit 7 of FF55 can be used to confirm if the DMA transfer is active (1=Not Active, 0=Active). 
+	This works under any circumstances - after completion of General Purpose, or HBlank Transfer, and after manually terminating a HBlank Transfer.
+
+	Transfer Timings
+	In both Normal Speed and Double Speed Mode it takes about 8 micros to transfer a block of $10 bytes. 
+	That is, 8 M-cycles in Normal Speed Mode [1], and 16 "fast" MACHINE-cycles in Double Speed Mode [2]. 
+	Older MBC controllers (like MBC1-3) and slower ROMs are not guaranteed to support General Purpose or HBlank DMA, 
+	that's because there are always 2 bytes transferred per microsecond (even if the itself program runs it Normal Speed Mode).
+*/
+static constexpr word HDMA_TRIGGER_ADDRESS = 0xFF55;
+static constexpr unsigned int HDMA_16_BYTE_TRANSFER_IN_CLOCK_CYLES = 32;
+
+
+/*
 	This register is used to address a byte in the CGB’s background palette RAM. Since there are 8 palettes, 8 palettes × 4 colors/palette × 2 bytes/color = 64 bytes can be addressed.
 
 	First comes BGP0 color number 0, then BGP0 color number 1, BGP0 color number 2, BGP0 color number 3, BGP1 color number 0, and so on. 
@@ -163,11 +217,15 @@ static const byte GAMEBOY_NATIVE_COLORS[4][4] =
 };
 
 Display::Display()
-	: mem_(nullptr)
+	: mainMemoryBlock_(nullptr)
 	, clock_(VBLANK_DOTS)
 	, totalFrameClock_(0)
 	, dmaClockCyclesRemaining_(0)
+	, cgbHdmaClockCyclesRemaining_(0)
 	, dmaSourceAddressStart_(0)
+	, cgbHdmaSourceAddress_(0)
+	, cgbHdmaDestinationAddress_(0)
+	, cgbHdmaTransferLength_(0)
 	, lcdStatus_(0)
 	, lcdControl_(0)
 	, scy_(0), scx_(0)
@@ -180,6 +238,8 @@ Display::Display()
 	, winx_(0), winy_(0)
 	, cgbVramBank_(0xFE)
 	, cgbBackgroundPaletteIndex_(0)
+	, cgbHdmaTrigger_(0)
+	, cgbHdmaTransferMode_(0)
 	, cgbOBJPaletteIndex_(0)
 	, cgbType_(Cartridge::CgbType::DMG)
 	, respectIllegalReadsWrites_(true)
@@ -200,10 +260,27 @@ void Display::update(const unsigned int spentCpuCycles)
 			// DMA finished, copy over the contents to OAM ram
 			for (int i = 0x00; i <= 0x9F; ++i)
 			{
-				mem_[Memory::OAM_START_ADDRESS + i] = mem_[dmaSourceAddressStart_ + i];
+				mainMemoryBlock_[Memory::OAM_START_ADDRESS + i] = memory_->readByteAt(dmaSourceAddressStart_ + i);
 			}
 		}
 		return;
+	}
+
+	if (cgbHdmaClockCyclesRemaining_ > 0)
+	{
+		cgbHdmaClockCyclesRemaining_ -= spentCpuCycles;
+
+		if (cgbHdmaClockCyclesRemaining_ <= 0 && cgbHdmaTransferMode_ == 0)			
+		{
+			// HDMA finished, copy over the contents to destination
+			for (int i = 0x00; i <= cgbHdmaTransferLength_; ++i)
+			{				
+				cgbVram_[(cgbHdmaDestinationAddress_ + i - Memory::VRAM_START_ADDRESS) + (cgbVramBank_ & 0x1) * 0x2000] = memory_->readByteAt(cgbHdmaSourceAddress_ + i);
+			}
+
+			cgbHdmaTrigger_ = 0xFF;
+			return;
+		}
 	}
 
 	// Display/PPU is off. Return early
@@ -305,6 +382,20 @@ void Display::update(const unsigned int spentCpuCycles)
 				SET_DISPLAY_MODE(DISPLAY_MODE_HBLANK);
 				
 				renderScanline();
+				
+				if (cgbHdmaClockCyclesRemaining_ > 0)
+				{
+					for (int i = 0; i < 0x10; ++i)
+					{
+						cgbVram_[(cgbHdmaDestinationAddress_ + cgbHdmaHblankTransferCurrentIndex_ + i - Memory::VRAM_START_ADDRESS) + 
+							     (cgbVramBank_ & 0x1) * 0x2000] = memory_->readByteAt(cgbHdmaSourceAddress_ + cgbHdmaHblankTransferCurrentIndex_ + i);
+					}
+					cgbHdmaHblankTransferCurrentIndex_ += 0x10;
+					if (cgbHdmaHblankTransferCurrentIndex_ == cgbHdmaTransferLength_)
+					{
+						assert(false);
+					}
+				}
 
 				if (IS_BIT_SET(3, lcdStatus_))
 				{
@@ -326,7 +417,7 @@ byte Display::readByteAt(const word address) const
 		}
 
 		if (cgbType_ == Cartridge::CgbType::DMG)
-			return mem_[address];
+			return mainMemoryBlock_[address];
 		else
 			return cgbVram_[(address - Memory::VRAM_START_ADDRESS) + (cgbVramBank_ & 0x1) * 0x2000];
 	}
@@ -337,7 +428,7 @@ byte Display::readByteAt(const word address) const
 			log(LogType::WARNING, "Attempt to read from OAM during LCD transfer or searching phase. Returning garbage.");
 			if (respectIllegalReadsWrites_) return 0xFF;
 		}
-		return mem_[address];
+		return mainMemoryBlock_[address];
 	}
 
 	switch (address)
@@ -355,6 +446,11 @@ byte Display::readByteAt(const word address) const
 		case WIN_X_ADDRESS: return winx_;
 		case WIN_Y_ADDRESS: return winy_;
 		case VRAM_BANK_ADDRESS: return cgbVramBank_;
+		case HDMA_SOURCE_START_HIGH_ADDRESS: log(LogType::WARNING, "Attempt to read from high byte source HDMA Address"); return 0xFF;
+		case HDMA_SOURCE_START_LOW_ADDRESS: log(LogType::WARNING, "Attempt to read from low byte source HDMA Address"); return 0xFF;
+		case HDMA_DESTINATION_START_HIGH_ADDRESS: log(LogType::WARNING, "Attempt to read from high byte destination HDMA Address"); return 0xFF;
+		case HDMA_DESTINATION_START_LOW_ADDRESS: log(LogType::WARNING, "Attempt to read from low byte destination HDMA Address"); return 0xFF;
+		case HDMA_TRIGGER_ADDRESS: return cgbHdmaTrigger_;
 		case CGB_BACKGROUND_PALETTE_INDEX_ADDRESS: return cgbBackgroundPaletteIndex_;
 		case CGB_BACKGROUND_PALETTE_DATA_ADDRESS: return cgbBackgroundPaletteRam_[cgbBackgroundPaletteIndex_ & (0x3F)];
 		case CGB_OBJ_PALETTE_INDEX_ADDRESS: return cgbOBJPaletteIndex_;
@@ -374,11 +470,8 @@ void Display::writeByteAt(const word address, const byte b)
 			if (respectIllegalReadsWrites_) return;
 		}
 
-		if (b != 0x0)
-			const auto b = false;
-
 		if (cgbType_ == Cartridge::CgbType::DMG)
-			mem_[address] = b;
+			mainMemoryBlock_[address] = b;
 		else
 			cgbVram_[(address - Memory::VRAM_START_ADDRESS) + (cgbVramBank_ & 0x1) * 0x2000] = b;
 		return;
@@ -390,7 +483,7 @@ void Display::writeByteAt(const word address, const byte b)
 			log(LogType::WARNING, "Attempt to write to OAM during LCD transfer or searching phase. Ignoring write.");			
 			if (respectIllegalReadsWrites_) return;
 		}
-		mem_[address] = b;
+		mainMemoryBlock_[address] = b;
 		return;
 	}
 
@@ -427,6 +520,11 @@ void Display::writeByteAt(const word address, const byte b)
 		case WIN_X_ADDRESS: winx_ = b; break;
 		case WIN_Y_ADDRESS: winy_ = b; break;
 		case VRAM_BANK_ADDRESS: cgbVramBank_ = ((b & 0x1) == 0x1) ? 0xFF : 0xFE; break; // Only set bottom bit for selected vram bank
+		case HDMA_SOURCE_START_HIGH_ADDRESS: cgbHdmaSourceAddress_ = (b << 8) | (cgbHdmaSourceAddress_ & 0x00FF);  break;
+		case HDMA_SOURCE_START_LOW_ADDRESS: cgbHdmaSourceAddress_ = (cgbHdmaSourceAddress_ & 0xFF00) | (b & 0xF0); break; // 4 bottom bits ignored
+		case HDMA_DESTINATION_START_HIGH_ADDRESS: cgbHdmaDestinationAddress_ = ((b << 8) | (cgbHdmaDestinationAddress_ & 0x00FF)); break;
+		case HDMA_DESTINATION_START_LOW_ADDRESS: cgbHdmaDestinationAddress_ = (cgbHdmaDestinationAddress_ & 0xFF00) | (b & 0xF0); break; // 4 bottom bits ignored 
+		case HDMA_TRIGGER_ADDRESS: performCgbHDMATransfer(b);  break;
 		case CGB_BACKGROUND_PALETTE_INDEX_ADDRESS: cgbBackgroundPaletteIndex_ = b; break;
 		case CGB_OBJ_PALETTE_INDEX_ADDRESS: cgbOBJPaletteIndex_ = b; break;
 		case CGB_BACKGROUND_PALETTE_DATA_ADDRESS: 
@@ -469,6 +567,17 @@ void Display::performDMATransfer(const byte b)
 {
 	dmaClockCyclesRemaining_ = DMA_CLOCK_CYCLES;
 	dmaSourceAddressStart_ = b << 8;
+}
+
+void Display::performCgbHDMATransfer(const byte b)
+{
+	assert(cgbHdmaDestinationAddress_ >= 0x8000 && cgbHdmaDestinationAddress_ <= 0x9FF0);
+	cgbHdmaTransferLength_ = (((b & 0x7F) + 1) * 0x10);	
+	cgbHdmaClockCyclesRemaining_ = (cgbHdmaTransferLength_ / 0x10) * HDMA_16_BYTE_TRANSFER_IN_CLOCK_CYLES;
+	cgbHdmaTransferMode_ = IS_BIT_SET(7, b) ? 1 : 0;
+	assert(cgbHdmaTransferMode_ == 0);
+	cgbHdmaTrigger_ = 0;
+	cgbHdmaHblankTransferCurrentIndex_ = 0;
 }
 
 void Display::renderScanline()
@@ -524,8 +633,8 @@ void Display::renderBackgroundScanline()
 		word wrappedPixelXCoord = ((scx_ + i) % 0x100);   // Makes sure X coord is in the [0-255] range after accounting for scrolling
 		word wrappedPixelYCoord = ((scy_ + ly_) % 0x100); // Makes sure Y coord is in the [0-255] range after accounting for scrolling
 
-		word bgXCoord = wrappedPixelXCoord >> 3;                                   // Transforms X coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
-		word bgYCoord = wrappedPixelYCoord >> 3;                                   // Transforms Y coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
+		word bgXCoord = wrappedPixelXCoord >> 3;          // Transforms X coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
+		word bgYCoord = wrappedPixelYCoord >> 3;          // Transforms Y coord into BG map coord (dividing by 8 as the bg map is a 32x32 grid)
 
 		if (cgbType_ != Cartridge::CgbType::DMG)
 		{
@@ -535,13 +644,13 @@ void Display::renderBackgroundScanline()
 			// Bit 4    Not used
 			// Bit 3    Tile VRAM Bank number(0 = Bank 0, 1 = Bank 1)
 			// Bit 2 - 0  Background Palette number(BGP0 - 7)
-			byte tileAttributes = cgbVram_[0x3800 + ((bgYCoord * 0x20) + bgXCoord)];
+			byte tileAttributes = cgbVram_[0x3800 + startingBgMapAddress + ((bgYCoord * 0x20) + bgXCoord) - 0x9800];
 	
-			bool bgToOAMPriority = IS_BIT_SET(7, tileAttributes);
-			bool verticalFlip = IS_BIT_SET(6, tileAttributes);
-			bool horizontalFlip = IS_BIT_SET(5, tileAttributes);
+			bool bgToOAMPriority          = IS_BIT_SET(7, tileAttributes);
+			bool verticalFlip             = IS_BIT_SET(6, tileAttributes);
+			bool horizontalFlip           = IS_BIT_SET(5, tileAttributes);
 			bool useTileDataFromVRAMBank0 = !IS_BIT_SET(3, tileAttributes);
-			byte cgbPaletteNumber = tileAttributes & 0x7;
+			byte cgbPaletteNumber         = tileAttributes & 0x7;
 
 			word tileId = cgbVram_[0x1800 + startingBgMapAddress + ((bgYCoord * 0x20) + bgXCoord) - 0x9800]; // Find tile id based on the above coords
 			
@@ -591,7 +700,7 @@ void Display::renderBackgroundScanline()
 		}
 		else // DMG
 		{
-			word tileId = mem_[startingBgMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
+			word tileId = mainMemoryBlock_[startingBgMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
 			word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;       // Find tile address based on Tile ID. Each tile data occupies 16 bytes
 
 			if (signedTileAddressing)
@@ -601,8 +710,8 @@ void Display::renderBackgroundScanline()
 			byte tileRow = wrappedPixelYCoord % 8; // Get tile data row to draw		
 
 			word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
-			byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
-			byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
+			byte targetTileDataFirstByte = mainMemoryBlock_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
+			byte targetTileDataSecondByte = mainMemoryBlock_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
 
 			byte colorIndexLSB = (targetTileDataFirstByte >> (7 - tileCol)) & 0x01;  // Get target bit from first byte
 			byte colorIndexMSB = (targetTileDataSecondByte >> (7 - tileCol)) & 0x01; // Get target bit from second byte
@@ -655,7 +764,7 @@ void Display::renderWindowScanline()
 			// Bit 4    Not used
 			// Bit 3    Tile VRAM Bank number(0 = Bank 0, 1 = Bank 1)
 			// Bit 2 - 0  Background Palette number(BGP0 - 7)
-			byte tileAttributes = cgbVram_[0x3800 + ((bgYCoord * 0x20) + bgXCoord)];
+			byte tileAttributes = cgbVram_[0x3800 + startingWindowMapAddress + ((bgYCoord * 0x20) + bgXCoord) - 0x9800];
 
 			bool bgToOAMPriority = IS_BIT_SET(7, tileAttributes);
 			bool verticalFlip = IS_BIT_SET(6, tileAttributes);
@@ -711,7 +820,7 @@ void Display::renderWindowScanline()
 		}
 		else // DMG
 		{
-			word tileId = mem_[startingWindowMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
+			word tileId = mainMemoryBlock_[startingWindowMapAddress + ((bgYCoord * 0x20) + bgXCoord)]; // Find tile id based on the above coords
 			word tileAddress = startingBgAndWindowTileDataAddress + 16 * tileId;       // Find tile address based on Tile ID. Each tile data occupies 16 bytes
 
 			if (signedTileAddressing)
@@ -721,8 +830,8 @@ void Display::renderWindowScanline()
 			byte tileRow = wrappedPixelYCoord % 8; // Get tile data row to draw
 
 			word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
-			byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
-			byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
+			byte targetTileDataFirstByte = mainMemoryBlock_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
+			byte targetTileDataSecondByte = mainMemoryBlock_[targetTileRowAddress + 1];     // Get second byte of tile data row (most significant bits for the final color index)
 
 			byte colorIndexLSB = (targetTileDataFirstByte >> (7 - tileCol)) & 0x01;  // Get target bit from first byte
 			byte colorIndexMSB = (targetTileDataSecondByte >> (7 - tileCol)) & 0x01; // Get target bit from second byte
@@ -736,8 +845,9 @@ void Display::renderWindowScanline()
 			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 2] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][2];
 			finalSDLPixels_[(ly_ * 160 * 4) + (i * 4) + 3] = GAMEBOY_NATIVE_COLORS[palette[colorIndex]][3];
 
-			windowScanlineRendered = true;
 		}
+
+		windowScanlineRendered = true;
 	}
 
 	if (windowScanlineRendered)
@@ -769,10 +879,10 @@ void Display::renderOBJsScanline()
 
 	for (word objAddress : selectedOBJAddressesForCurrentScanline_)
 	{
-		byte objYPos      = mem_[objAddress + 0] - 16;
-		byte objXPos      = mem_[objAddress + 1] - 8;
-		byte objTileIndex = mem_[objAddress + 2];
-		byte objFlags     = mem_[objAddress + 3];
+		byte objYPos      = mainMemoryBlock_[objAddress + 0] - 16;
+		byte objXPos      = mainMemoryBlock_[objAddress + 1] - 8;
+		byte objTileIndex = mainMemoryBlock_[objAddress + 2];
+		byte objFlags     = mainMemoryBlock_[objAddress + 3];
 
 		bool bgAndWindowOverObj = IS_BIT_SET(7, objFlags);
 		bool isHorFlipped       = IS_BIT_SET(5, objFlags);
@@ -811,8 +921,8 @@ void Display::renderOBJsScanline()
 		}
 
 		word targetTileRowAddress = tileAddress + (tileRow * 2 /* 2 bytes per tile data row */);
-		byte targetTileDataFirstByte = mem_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
-		byte targetTileDataSecondByte = mem_[targetTileRowAddress + 1]; // Get second byte of tile data row (most significant bits for the final color index)
+		byte targetTileDataFirstByte = mainMemoryBlock_[targetTileRowAddress];          // Get first byte of tile data row (least significant bits for the final color index)
+		byte targetTileDataSecondByte = mainMemoryBlock_[targetTileRowAddress + 1]; // Get second byte of tile data row (most significant bits for the final color index)
 
 		if (cgbType_ != Cartridge::CgbType::DMG)
 		{
@@ -902,7 +1012,7 @@ void Display::searchOBJSInCurrentScanline()
 	// Scan all OAM memories 4-byte obj entries
 	for (word i = Memory::OAM_START_ADDRESS; i < Memory::OAM_END_ADDRESS; i += 4)
 	{
-		byte objYPos = mem_[i] - 16;
+		byte objYPos = mainMemoryBlock_[i] - 16;
 
 		if (xlSprites) // 8x16 case
 		{
@@ -924,8 +1034,8 @@ void Display::searchOBJSInCurrentScanline()
 	{
 		for (int j = 0; j < count - i - 1; ++j)
 		{
-			byte lhsX = mem_[selectedOBJAddressesForCurrentScanline_[j] + 1];
-			byte rhsX = mem_[selectedOBJAddressesForCurrentScanline_[j + 1] + 1];
+			byte lhsX = mainMemoryBlock_[selectedOBJAddressesForCurrentScanline_[j] + 1];
+			byte rhsX = mainMemoryBlock_[selectedOBJAddressesForCurrentScanline_[j + 1] + 1];
 			
 			if (lhsX < rhsX)
 			{

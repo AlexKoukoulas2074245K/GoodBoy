@@ -8,6 +8,7 @@
 #include <vector>
 
 class CPU;
+class Memory;
 class Display final
 {
 public:
@@ -15,8 +16,9 @@ public:
 
 	using VBlankCallback = std::function<void(byte*)>;
 	void setVBlankCallback(VBlankCallback cb) { cb_ = cb; }
-	void setMemory(byte* mem) { mem_ = mem; }
+	void setMainMemoryBlock(byte* mem) { mainMemoryBlock_ = mem; }
 	void setCPU(CPU* cpu) { cpu_ = cpu; }
+	void setMemory(Memory* mem) { memory_ = mem; }
 	void setCartridgeCgbType(Cartridge::CgbType cgbType) { cgbType_ = cgbType; }
 
 	void update(const unsigned int spentCpuCycles);
@@ -24,10 +26,12 @@ public:
 	byte readByteAt(const word address) const;
 	void writeByteAt(const word address, const byte b);
 	bool dmaTransferInProgress() const { return dmaClockCyclesRemaining_ > 0; }
+	bool cgbHdmaTransferInProgress() const { return cgbHdmaClockCyclesRemaining_ > 0; }
 	bool respectsIllegalReadWrites() const { return respectIllegalReadsWrites_;  }
 	
 private:
 	void performDMATransfer(const byte b);
+	void performCgbHDMATransfer(const byte b);
 	void renderScanline();
 	void renderBackgroundScanline();
 	void renderWindowScanline();
@@ -45,12 +49,18 @@ private:
 	byte spriteColorIndices[160 * 144];
 	std::vector<word> selectedOBJAddressesForCurrentScanline_;
 	CPU* cpu_;
-	byte* mem_;
+	Memory* memory_;
+	byte* mainMemoryBlock_;
 	VBlankCallback cb_;
 	int clock_;
 	int totalFrameClock_;
 	int dmaClockCyclesRemaining_;
+	int cgbHdmaClockCyclesRemaining_;
 	word dmaSourceAddressStart_;
+	word cgbHdmaSourceAddress_;
+	word cgbHdmaDestinationAddress_;	
+	word cgbHdmaTransferLength_;
+	word cgbHdmaHblankTransferCurrentIndex_;
 	byte lcdStatus_;
 	byte lcdControl_;
 	byte scy_, scx_;
@@ -64,6 +74,8 @@ private:
 	byte cgbVramBank_;
 	byte cgbBackgroundPaletteIndex_;
 	byte cgbOBJPaletteIndex_;
+	byte cgbHdmaTrigger_;
+	byte cgbHdmaTransferMode_;
 	Cartridge::CgbType cgbType_;
 	bool respectIllegalReadsWrites_;
 };

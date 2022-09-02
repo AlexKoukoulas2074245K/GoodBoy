@@ -7,9 +7,10 @@ System::System()
 	, timer_()
 	, apu_()
 	, mem_(display_, cartridge_, joypad_, timer_, apu_)
-	, cpu_(mem_)
+	, cpu_(mem_, display_)
 {
-	display_.setMemory(mem_.mem_);
+	display_.setMemory(&mem_);
+	display_.setMainMemoryBlock(mem_.mem_);
 	joypad_.setMemory(mem_.mem_);
 	timer_.setMemory(mem_.mem_);
 

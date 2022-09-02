@@ -184,10 +184,12 @@ byte Memory::readAt(const word address) const
 		return display_.readByteAt(address);
 	else if (address == VRAM_BANK_SELECT_ADDRESS && cgbType_ != Cartridge::CgbType::DMG)
 		return display_.readByteAt(address);
+	else if (address == CGB_SPEED_SWITCH_ADDRESS)
+		log(LogType::INFO, ("Reading from " + getHexWord(address) + ": at CGB_SPEED_SWITCH (" + getHexWord(CGB_SPEED_SWITCH_ADDRESS) + ").").c_str());
 	else if (address == DISABLE_BOOT_ROM_ADDRESS)
 		log(LogType::INFO, ("Reading from " + getHexWord(address) + ": at DISABLE_BOOT_ROM_ADDRESS (" + getHexWord(DISABLE_BOOT_ROM_ADDRESS) + ").").c_str());
 	else if (address >= VRAM_DMA_START_ADDRESS && address <= VRAM_DMA_END_ADDRESS)
-		log(LogType::INFO, ("Reading from " + getHexWord(address) + ": at VRAM_DMA (" + getHexWord(VRAM_DMA_START_ADDRESS) + "-" + getHexWord(VRAM_DMA_END_ADDRESS) + ")").c_str());
+		return display_.readByteAt(address);
 	else if (address >= BG_OBJ_PALETTES_START_ADDRESS && address <= BG_OBJ_PALETTES_END_ADDRESS)
 		return display_.readByteAt(address);
 	else if (address == WRAM_BANK_SELECT_ADDRESS && cgbType_ != Cartridge::CgbType::DMG) 
@@ -268,6 +270,8 @@ void Memory::writeAt(const word address, const byte b)
 		display_.writeByteAt(address, b);
 		return;
 	}
+	else if (address == CGB_SPEED_SWITCH_ADDRESS)
+		log(LogType::INFO, ("Writing: " + getHexByte(b) + " at  " + getHexWord(address) + " CGB SPEED SWITCH (" + getHexWord(CGB_SPEED_SWITCH_ADDRESS) + "). CGB Only.").c_str());
 	else if (address == VRAM_BANK_SELECT_ADDRESS && cgbType_ != Cartridge::CgbType::DMG)
 	{
 		display_.writeByteAt(address, b);
@@ -282,7 +286,10 @@ void Memory::writeAt(const word address, const byte b)
 		}
 	}
 	else if (address >= VRAM_DMA_START_ADDRESS && address <= VRAM_DMA_END_ADDRESS)
-		log(LogType::INFO, ("Writing: " + getHexByte(b) + " at  " + getHexWord(address) + " VRAM_DMA (" + getHexWord(VRAM_DMA_START_ADDRESS) + "-" + getHexWord(VRAM_DMA_END_ADDRESS) + "). CGB Only.").c_str());
+	{
+		display_.writeByteAt(address, b);
+		return;
+	}
 	else if (address >= BG_OBJ_PALETTES_START_ADDRESS && address <= BG_OBJ_PALETTES_END_ADDRESS)
 	{
 		display_.writeByteAt(address, b);

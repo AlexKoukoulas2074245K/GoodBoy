@@ -44,6 +44,7 @@ public:
 	static constexpr word SOUND_END_ADDRESS              = 0xFF3F;
 	static constexpr word LCD_START_ADDRESS              = 0xFF40;
 	static constexpr word LCD_END_ADDRESS                = 0xFF4B;
+	static constexpr word CGB_SPEED_SWITCH_ADDRESS       = 0xFF4D; // CGB+
 	static constexpr word VRAM_BANK_SELECT_ADDRESS       = 0xFF4F; // CGB+
 	static constexpr word DISABLE_BOOT_ROM_ADDRESS       = 0xFF50;
 	static constexpr word VRAM_DMA_START_ADDRESS         = 0xFF51; // CGB+

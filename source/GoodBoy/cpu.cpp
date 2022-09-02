@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "cpu.h"
+#include "display.h"
 #include "logging.h"
 
 #include <cassert>
@@ -78,8 +79,9 @@ static constexpr word JOYPAD_INTERRUPT_HANDLER_ADDRESS   = 0x60;
 
 static constexpr byte ISR_EXECUTION_CLOCK_CYCLES = 0;
 
-CPU::CPU(Memory& mem)
+CPU::CPU(Memory& mem, Display& display)
 	: mem_(mem)
+	, display_(display)
 	, registersAF_(0)
 	, registersPC_(0)
 	, isHalted_(false)
@@ -92,7 +94,7 @@ CPU::CPU(Memory& mem)
 
 unsigned int CPU::executeNextInstruction()
 {
-	if (isHalted_)
+	if (isHalted_ || display_.cgbHdmaTransferInProgress())
 	{
 		return coreInstructionClockCycles[0];
 	}
@@ -414,7 +416,7 @@ unsigned int CPU::executeNextInstruction()
 		case 0x2F: cpl(); break;
 
 		// DI
-		case 0xF3: ime_ = false;  break;
+		case 0xF3: eiTriggered_ = false; ime_ = false;  break;
 
 		// EI
 		case 0xFB: eiTriggered_ = true; break;
