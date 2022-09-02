@@ -18,7 +18,7 @@ static const std::string CARTRIDGE_TYPE_NAMES[] =
 	"(ROM ONLY)", "(MBC1)", "(MBC1 + RAM)", "(MBC1+RAM+BATTERY)", "", "(MBC2)",
 	"(MBC2+BATTERY)", "", "(ROM+RAM)", "(ROM+RAM+BATTERY)", "", "(MMM01)", "(MMM01+RAM)", "(MMM01+RAM+BATTERY)",
 	"", "(MBC3+TIMER+BATTERY)", "(MBC3+TIMER+RAM+BATTERY)", "(MBC3)", "(MBC3+RAM)", "(MBC3+RAM+BATTERY)", "",
-	"", "", "", "", "(MBC5)", "(MBC5+RAM)", "(MBC5+RAM+BATTERY)"
+	"", "", "", "", "(MBC5)", "(MBC5+RAM)", "(MBC5+RAM+BATTERY)", "(MBC5+RUMBLE)", "(MBC5+RUMBLE+RAM)", "(MBC5+RUMBLE+RAM+BATTERY)"
 };
 
 static const word CARTRIDGE_RAM_SIZES[] =
@@ -75,6 +75,7 @@ byte Cartridge::readByteAt(const word address) const
 		} break;
 
 		case CartridgeType::MBC1:
+		case CartridgeType::MBC1_RAM:
 		case CartridgeType::MBC1_RAM_BATTERY:
 		{
 			if (address <= 0x3FFF)
@@ -111,6 +112,7 @@ byte Cartridge::readByteAt(const word address) const
 		} break;
 
 		case CartridgeType::MBC3_RAM_BATTERY:
+		case CartridgeType::MBC3_TIMER_RAM_BATTERY:
 		{
 			if (address <= 0x3FFF)
 			{
@@ -139,6 +141,7 @@ byte Cartridge::readByteAt(const word address) const
 		} break;
 
 		case CartridgeType::MBC5_RAM_BATTERY:
+		case CartridgeType::MBC5_RUMBLE_RAM_BATTERY:
 		{
 			if (address <= 0x3FFF)
 			{
@@ -182,6 +185,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 		} break;
 
 		case CartridgeType::MBC1:
+		case CartridgeType::MBC1_RAM:
 		case CartridgeType::MBC1_RAM_BATTERY:
 		{
 			if (address <= 0x1FFF)
@@ -231,6 +235,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 		} break;
 
 		case CartridgeType::MBC3_RAM_BATTERY:
+		case CartridgeType::MBC3_TIMER_RAM_BATTERY:
 		{
 			if (address <= 0x1FFF)
 			{
@@ -276,6 +281,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 		} break;
 
 		case CartridgeType::MBC5_RAM_BATTERY:
+		case CartridgeType::MBC5_RUMBLE_RAM_BATTERY:
 		{
 			if (address <= 0x1FFF)
 			{
@@ -403,8 +409,11 @@ void Cartridge::flushExternalRamToFile()
 	switch (cartridgeType_)
 	{
 	case CartridgeType::MBC1_RAM_BATTERY:
+	case CartridgeType::MBC1_RAM:
 	case CartridgeType::MBC3_RAM_BATTERY:
+	case CartridgeType::MBC3_TIMER_RAM_BATTERY:
 	case CartridgeType::MBC5_RAM_BATTERY:
+	case CartridgeType::MBC5_RUMBLE_RAM_BATTERY:
 	{
 		if (cartridgeExternalRAMSizeInKB_ > 0 && !externalRamEnabled_)
 		{

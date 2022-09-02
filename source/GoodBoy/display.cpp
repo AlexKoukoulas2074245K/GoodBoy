@@ -273,7 +273,7 @@ void Display::update(const unsigned int spentCpuCycles)
 		if (cgbHdmaClockCyclesRemaining_ <= 0 && cgbHdmaTransferMode_ == 0)			
 		{
 			// HDMA finished, copy over the contents to destination
-			for (int i = 0x00; i <= cgbHdmaTransferLength_; ++i)
+			for (int i = 0x00; i < cgbHdmaTransferLength_; ++i)
 			{				
 				cgbVram_[(cgbHdmaDestinationAddress_ + i - Memory::VRAM_START_ADDRESS) + (cgbVramBank_ & 0x1) * 0x2000] = memory_->readByteAt(cgbHdmaSourceAddress_ + i);
 			}

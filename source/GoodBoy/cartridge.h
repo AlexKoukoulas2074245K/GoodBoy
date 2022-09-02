@@ -12,11 +12,15 @@ public:
 	{
 		ROM_ONLY = 0x0,
 		MBC1 = 0x1,
-		//MBC1_RAM = 0x2,
+		MBC1_RAM = 0x2,
 		MBC1_RAM_BATTERY = 0x3,
+		MBC3_TIMER_RAM_BATTERY = 0x10,
 		MBC3_RAM_BATTERY = 0x13,
 		MBC5_RAM_BATTERY = 0x1b,
-		UNSUPPORTED = 0x1c,
+		MBC5_RUMBLE = 0x1c,
+		MBC5_RUMBLE_RAM = 0x1d,
+		MBC5_RUMBLE_RAM_BATTERY = 0x1e,
+		UNSUPPORTED = 0x1f,
 	};
 
 	enum class CgbType

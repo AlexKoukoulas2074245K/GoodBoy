@@ -181,7 +181,7 @@ int main(int argc, char** argv)
     
     std::string cartridgeName;
     if (argc == 1)
-        cartridgeName = gameboySystem.loadCartridge("roms/yellow.gbc");
+        cartridgeName = gameboySystem.loadCartridge("roms/harry_potter.gbc");
     else
         cartridgeName = gameboySystem.loadCartridge(argv[argc - 1]);
 
