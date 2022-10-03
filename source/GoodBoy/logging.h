@@ -9,7 +9,7 @@
 #include <sstream>
 #include <iomanip>
 
-#define LOG_IN_RELEASE
+//#define LOG_IN_RELEASE
 
 
 enum class LogType

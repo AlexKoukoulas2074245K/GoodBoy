@@ -374,7 +374,6 @@ bool APU::writeByte(const word address, const byte val)
         m_SoundOnOff = val & 0x80;
         return true;
     default:
-        assert(false);
         return false;
     }
 }

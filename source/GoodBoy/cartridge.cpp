@@ -288,9 +288,7 @@ void Cartridge::writeByteAt(const word address, const byte b)
 				externalRamEnabled_ = (b & 0x0A) == 0x0A;
 			}
 			else if (address <= 0x2FFF)
-			{
-				
-				// Lower 8 bit rom bank register.
+			{								
 				romBankNumberRegister_ = b;				
 
 				// If this register is set to 0x00, it behaves as if it is set to 0x01
@@ -357,7 +355,7 @@ void Cartridge::setSaveFilename(const char* filepath)
 		saveFileName_ = path[i] + saveFileName_;
 	}
 
-	saveFileName_ += ".sav";
+	saveFileName_ += "sav";
 }
 
 void Cartridge::setCartridgeAttributes()

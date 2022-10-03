@@ -41,7 +41,7 @@ struct SDLTextureDeleter
     }
 };
 
-void Render(byte* pixels, SDL_Renderer* pRenderer, SDL_Texture* pTexture)
+void render(byte* pixels, SDL_Renderer* pRenderer, SDL_Texture* pTexture)
 {
     // Clear window
     SDL_SetRenderDrawColor(pRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -67,12 +67,12 @@ std::unique_ptr<SDL_Renderer, SDLRendererDeleter> spRenderer;
 std::unique_ptr<SDL_Texture, SDLTextureDeleter> spTexture;
 
 // The emulator will call this whenever we hit VBlank
-void VBlankCallback(byte* pixels)
+void vBlankCallback(byte* pixels)
 {
-    Render(pixels, spRenderer.get(), spTexture.get());
+    render(pixels, spRenderer.get(), spTexture.get());
 }
 
-void ProcessInput(System& system)
+void processInput(System& system)
 {
     SDL_PumpEvents();
     const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -122,6 +122,15 @@ void ProcessInput(System& system)
     system.setInputState(actionButtons, directionButtons);
 }
 
+std::unique_ptr<System> initSystem(const char* romPath, SDL_Window* window)
+{
+    auto system = std::make_unique<System>();
+    auto cartridgeName = system->loadCartridge(romPath);
+    system->setVBlankCallback(vBlankCallback);
+    SDL_SetWindowTitle(window, ("GoodBoy: " + cartridgeName).c_str());
+    return system;
+}
+
 
 // 60 FPS or 16.67ms
 const double TimePerFrame = 1.0 / 60.0;
@@ -146,6 +155,8 @@ int main(int argc, char** argv)
         log(LogType::ERROR, "SDL could not initialize! SDL error: '%s'", SDL_GetError());
         return -1;
     }
+    SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
+
 
     // Create window
     spWindow = std::unique_ptr<SDL_Window, SDLWindowDeleter>(
@@ -174,20 +185,16 @@ int main(int argc, char** argv)
     spTexture = std::unique_ptr<SDL_Texture, SDLTextureDeleter>(
         SDL_CreateTexture(spRenderer.get(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 160, 144));
 
-    // set vsync data
-    unsigned int cpuClockCycles = 0;
-    
-    System gameboySystem;     
-    
-    std::string cartridgeName;
-    if (argc == 1)
-        cartridgeName = gameboySystem.loadCartridge("roms/harry_potter.gbc");
+    unsigned int cpuClockCycles = 0;    
+    std::unique_ptr<System> gameboySystem = nullptr;     
+    if (argc != 1)
+    {
+        gameboySystem = initSystem(argv[argc - 1], spWindow.get());
+    }
     else
-        cartridgeName = gameboySystem.loadCartridge(argv[argc - 1]);
-
-    gameboySystem.setVBlankCallback(VBlankCallback);
-
-    SDL_SetWindowTitle(spWindow.get(), ("GoodBoy: " + cartridgeName).c_str());
+    {
+        SDL_SetWindowTitle(spWindow.get(), "GoodBoy: Drag & Drop rom file");
+    }
 
     Uint64 frameStart = SDL_GetPerformanceCounter();
     while (isRunning)
@@ -199,6 +206,12 @@ int main(int argc, char** argv)
             {
                 isRunning = false;
             }
+            if (event.type == SDL_DROPFILE)
+            {
+                char* droppedRomPath = event.drop.file;       
+                gameboySystem = initSystem(droppedRomPath, spWindow.get());
+                SDL_free(droppedRomPath);
+            } break;
         }
 
         if (!isRunning)
@@ -207,13 +220,15 @@ int main(int argc, char** argv)
             continue;
         }
 
-        ProcessInput(gameboySystem);
-        while (cpuClockCycles < CPU_CLOCK_CYCLES_PER_FRAME)
+        if (gameboySystem)
         {
-            cpuClockCycles += gameboySystem.emulateNextMachineStep();
+            processInput(*gameboySystem);
+            while (cpuClockCycles < CPU_CLOCK_CYCLES_PER_FRAME)
+            {
+                cpuClockCycles += gameboySystem->emulateNextMachineStep();
+            }
+            cpuClockCycles -= CPU_CLOCK_CYCLES_PER_FRAME;
         }
-
-        cpuClockCycles -= CPU_CLOCK_CYCLES_PER_FRAME;
 
         Uint64 frameEnd = SDL_GetPerformanceCounter();
         // Loop until we use up the rest of our frame time
