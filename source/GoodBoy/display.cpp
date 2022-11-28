@@ -12,12 +12,12 @@
 #define SET_BIT(bit, reg) reg |= (1 << bit)
 #define RESET_BIT(bit, reg) reg &= (~(1 << bit))
 
-static constexpr unsigned int SCANLINE_DOTS            = 456;
-static constexpr unsigned int HBLANK_DOTS              = 204; 
-static constexpr unsigned int VBLANK_DOTS              = 4560;
-static constexpr unsigned int SEARCHING_OAM_DOTS       = 80;
-static constexpr unsigned int TRANSFERRING_TO_LCD_DOTS = 172;
-static constexpr unsigned int TOTAL_PER_FRAME_DOTS     = 70224;
+static constexpr int SCANLINE_DOTS            = 456;
+static constexpr int HBLANK_DOTS              = 204;
+static constexpr int VBLANK_DOTS              = 4560;
+static constexpr int SEARCHING_OAM_DOTS       = 80;
+static constexpr int TRANSFERRING_TO_LCD_DOTS = 172;
+static constexpr int TOTAL_PER_FRAME_DOTS     = 70224;
 
 static constexpr byte DISPLAY_MODE_HBLANK              = 0x0;
 static constexpr byte DISPLAY_MODE_VBLANK              = 0x1;
@@ -209,11 +209,11 @@ static constexpr word CGB_OBJ_PALETTE_DATA_ADRESS         = 0xFF6B;
 */
 static const byte GAMEBOY_NATIVE_COLORS[4][4] =
 {
-	//A   //B   //G   //R
-	0xFF, 0xD0, 0xF8, 0xE0,
-	0xFF, 0x70, 0xC0, 0x88,
-	0xFF, 0x56, 0x68, 0x34,
-	0xFF, 0x20, 0x18, 0x08
+    //A   //B   //G   //R
+    {0xFF, 0xD0, 0xF8, 0xE0},
+    {0xFF, 0x70, 0xC0, 0x88},
+    {0xFF, 0x56, 0x68, 0x34},
+    {0xFF, 0x20, 0x18, 0x08}
 };
 
 Display::Display()
@@ -238,9 +238,9 @@ Display::Display()
 	, winx_(0), winy_(0)
 	, cgbVramBank_(0xFE)
 	, cgbBackgroundPaletteIndex_(0)
-	, cgbHdmaTrigger_(0)
+    , cgbOBJPaletteIndex_(0)
+    , cgbHdmaTrigger_(0)
 	, cgbHdmaTransferMode_(0)
-	, cgbOBJPaletteIndex_(0)
 	, cgbType_(Cartridge::CgbType::DMG)
 	, respectIllegalReadsWrites_(true)
 {

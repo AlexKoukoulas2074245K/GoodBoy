@@ -1,9 +1,8 @@
 #ifndef APU_H
 #define APU_H
 
-#include "types.h"
-
 #include <SDL.h>
+#include "types.h"
 #include <mutex>
 
 // APU code taken from https://github.com/Dooskington/GameLad/pull/111

@@ -6,7 +6,9 @@ source/Release
 source/GoodBoy/Debug
 source/GoodBoy/Release
 source/GoodBoy/roms
+project_files/
 *.vcxproj
 *.filters
 *.user
+*.DS_Store
 GoodBoy.sln

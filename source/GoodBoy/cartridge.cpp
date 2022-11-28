@@ -171,6 +171,8 @@ byte Cartridge::readByteAt(const word address) const
 				log(LogType::WARNING, "Unhandled rom read address %s", getHexWord(address).c_str());
 			}
 		} break;
+            
+        default: break;
 	}
 	return 0xFF;
 }
@@ -326,6 +328,8 @@ void Cartridge::writeByteAt(const word address, const byte b)
 				log(LogType::WARNING, "Unhandled rom write address %s byte %s", getHexWord(address).c_str(), getHexByte(b).c_str());
 			}
 		} break;
+            
+        default: break;
 	}
 }
 
@@ -395,7 +399,6 @@ void Cartridge::setCartridgeExternalRam()
 	{
 		// get file size
 		fseek(eRamFile, 0, SEEK_END);
-		long size = ftell(eRamFile);
 		fseek(eRamFile, 0, SEEK_SET);
 		fread(cartridgeExternalRam_, sizeof(byte), cartridgeExternalRAMSizeInKB_ * 1024, eRamFile);
 		fclose(eRamFile);

@@ -98,7 +98,7 @@ byte Timer::readByteAt(const word address) const
 		case TIMER_MOD_ADDRESS: return timerModRegister_;
 		case TIMER_CONTROL_ADDRESS: return timerControlRegister_;
 		default:
-			log(LogType::WARNING, "Unknown TIMER read at %s", getHexWord(address));
+			log(LogType::WARNING, "Unknown TIMER read at %s", getHexWord(address).c_str());
 	}
 	return 0xFF;
 }
@@ -112,6 +112,6 @@ void Timer::writeByteAt(const word address, const byte b)
 		case TIMER_MOD_ADDRESS: timerModUdpatedThisCycle_ = true; nextTimerModValue_ = b; break; // see same cycle mod update edge case above
 		case TIMER_CONTROL_ADDRESS: timerControlRegister_ = (b & 0x07); timerAccumRegisterCycleCounter_ = 0; break; // Only 3 bottom bits are writeable
 		default:
-			log(LogType::WARNING, "Unknown TIMER write %s at %s", getHexByte(b), getHexWord(address));
+			log(LogType::WARNING, "Unknown TIMER write %s at %s", getHexByte(b).c_str(), getHexWord(address).c_str());
 	}
 }

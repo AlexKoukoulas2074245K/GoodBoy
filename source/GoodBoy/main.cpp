@@ -170,7 +170,7 @@ int main(int argc, char** argv)
     if (spWindow == nullptr)
     {
         log(LogType::ERROR, "Window could not be created! SDL error: '%s'", SDL_GetError());
-        return false;
+        return 0;
     }
 
     // Create renderer
@@ -179,7 +179,7 @@ int main(int argc, char** argv)
     if (spRenderer == nullptr)
     {
         log(LogType::ERROR, "Renderer could not be created! SDL error: '%s'", SDL_GetError());
-        return false;
+        return 0;
     }
 
     spTexture = std::unique_ptr<SDL_Texture, SDLTextureDeleter>(

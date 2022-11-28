@@ -118,10 +118,10 @@ APU::APU() :
         &m_Channel4PolynomialCounter,
         &m_Channel4Counter
     ),
-    m_Initialized(false),
     m_AudioDevice(0),
     m_AudioFrameRemainder(0.0),
-    m_OutputBuffer(InternalAudioBufferSize, FrameSizeBytes)
+    m_OutputBuffer(InternalAudioBufferSize, FrameSizeBytes),
+    m_Initialized(false)
 {
     memset(m_WavePatternRAM, 0x00, ARRAYSIZE(m_WavePatternRAM));
 
@@ -525,6 +525,7 @@ void APU::SoundGenerator::SetSoundOnOffFlag()
     case CHANNEL_4:
         sound_on_off_register |= 0b1000;
     }
+    (void)sound_on_off_register;
 }
 
 void APU::SoundGenerator::ResetSoundOnOffFlag()
@@ -544,6 +545,7 @@ void APU::SoundGenerator::ResetSoundOnOffFlag()
     case CHANNEL_4:
         sound_on_off_register &= ~0b1000;
     }
+    (void)sound_on_off_register;
 }
 
 APU::SquareWaveGenerator::SquareWaveGenerator(
