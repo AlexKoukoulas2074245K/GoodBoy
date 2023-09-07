@@ -118,7 +118,16 @@ void processInput(System& system)
     {
         actionButtons |= System::ACTION_BUTTON_SELECT_MASK;
     }
-
+    
+    static bool soundButtonDownLastFrame = false;
+    
+    if (keys[SDL_SCANCODE_S] && !soundButtonDownLastFrame)
+    {
+        system.toggleSoundDisabled();
+    }
+    
+    soundButtonDownLastFrame = keys[SDL_SCANCODE_S];
+    
     system.setInputState(actionButtons, directionButtons);
 }
 

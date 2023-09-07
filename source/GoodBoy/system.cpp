@@ -56,3 +56,14 @@ void System::setVBlankCallback(Display::VBlankCallback cb)
 {
 	display_.setVBlankCallback(cb);
 }
+
+void System::toggleSoundDisabled()
+{
+    apu_.setSoundDisabled(!apu_.isSoundDisabled());
+}
+
+bool System::isSoundDisabled() const
+{
+     return apu_.isSoundDisabled();
+}
+

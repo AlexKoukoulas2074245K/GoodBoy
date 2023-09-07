@@ -121,7 +121,8 @@ APU::APU() :
     m_AudioDevice(0),
     m_AudioFrameRemainder(0.0),
     m_OutputBuffer(InternalAudioBufferSize, FrameSizeBytes),
-    m_Initialized(false)
+    m_Initialized(false),
+    m_SoundDisabled(false)
 {
     memset(m_WavePatternRAM, 0x00, ARRAYSIZE(m_WavePatternRAM));
 
@@ -274,6 +275,11 @@ byte APU::readByte(const word address)
 
 bool APU::writeByte(const word address, const byte val)
 {
+    if (m_SoundDisabled)
+    {
+        return true;
+    }
+    
 #ifdef   DISABLE_ALL_SOUND
     return true;
 #endif
@@ -376,6 +382,28 @@ bool APU::writeByte(const word address, const byte val)
     default:
         return false;
     }
+}
+
+void APU::setSoundDisabled(const bool soundDisabled)
+{
+    m_SoundDisabled = soundDisabled;
+    if (m_SoundDisabled)
+    {
+        if (m_Initialized)
+        {
+            SDL_PauseAudioDevice(m_AudioDevice, 1);
+            SDL_CloseAudioDevice(m_AudioDevice);
+        }
+    }
+    else
+    {
+        LoadAudioDevice(AudioDeviceCallbackStatic);
+    }
+}
+
+bool APU::isSoundDisabled() const
+{
+    return m_SoundDisabled;
 }
 
 void APU::LoadAudioDevice(SDL_AudioCallback callback)

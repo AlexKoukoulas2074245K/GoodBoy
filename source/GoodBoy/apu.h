@@ -18,7 +18,10 @@ public:
     // IMemoryUnit
     byte readByte(const word address);
     bool writeByte(const word address, const byte val);
-
+    
+    void setSoundDisabled(const bool soundDisabled);
+    bool isSoundDisabled() const;
+    
 private:
     void LoadAudioDevice(SDL_AudioCallback callback);
 
@@ -245,6 +248,7 @@ private:
     double m_AudioFrameRemainder;
     Buffer m_OutputBuffer;
     bool m_Initialized;
+    bool m_SoundDisabled;
 };
 
 #endif

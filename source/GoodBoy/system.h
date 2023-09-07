@@ -31,7 +31,10 @@ public:
 
 	void setInputState(const byte actionButtons, const byte directionButtons);
 	void setVBlankCallback(Display::VBlankCallback cb);
-
+    
+    void toggleSoundDisabled();
+    bool isSoundDisabled() const;
+    
 private:
 	Display display_;
 	Cartridge cartridge_;
