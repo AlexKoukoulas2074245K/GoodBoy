@@ -1,0 +1,1068 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		2BC754A5368641BD993A8B14 /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 753CEFF4F18949D4AE87ABEE /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				6D1D3248BD604D6C4ED65E14 /* Generate CMakeFiles/ZERO_CHECK */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+		FE9875934F514604B80F8FEE /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 475F8645482349178BAAA427 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				136F884815AA9A85AD06E292 /* Generate CMakeFiles/ALL_BUILD */,
+			);
+			dependencies = (
+				AC5953D380FF402BB217C64C /* PBXTargetDependency */,
+				2807D7622D1F4B279446E88D /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		0046584687E943079EF8850A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles.h */ = {isa = PBXBuildFile; fileRef = F397C5FBDDBF4F13AF952187 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles.h */; };
+		014432836EEC4D479A9CE7F9 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_scancode.h */ = {isa = PBXBuildFile; fileRef = 982B9BAA30AF4C3E8D25E3BF /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_scancode.h */; };
+		01F6282CAB8D4A5B96801ADD /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_keycode.h */ = {isa = PBXBuildFile; fileRef = 4BD567716CE540CEA6B6DF98 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_keycode.h */; };
+		033BCCEFF3814167935EA8EB /* /Users/Code/GoodBoy/source/GoodBoy/display.cpp */ = {isa = PBXBuildFile; fileRef = E16F51ED1DC7460781DCC5B4 /* /Users/Code/GoodBoy/source/GoodBoy/display.cpp */; };
+		03C28CE45B4A4C86A3BF816B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2platform.h */ = {isa = PBXBuildFile; fileRef = FC27DBCDE39547F5A373E12F /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2platform.h */; };
+		06EB43627572474B92E55C1A /* /Users/Code/GoodBoy/source/GoodBoy/cpu.cpp */ = {isa = PBXBuildFile; fileRef = 2235F57460474078A48A1B03 /* /Users/Code/GoodBoy/source/GoodBoy/cpu.cpp */; };
+		070D0B2DA2C1433D94D7A8BD /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_font.h */ = {isa = PBXBuildFile; fileRef = 72EB6108525647289863CF98 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_font.h */; };
+		09D421BB97014C24A480F30B /* /Users/Code/GoodBoy/source/GoodBoy/apu.cpp */ = {isa = PBXBuildFile; fileRef = FB320BA96A2B42CA9CCF0026 /* /Users/Code/GoodBoy/source/GoodBoy/apu.cpp */; };
+		0E2049F3DFCD459E9E537C7E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_copying.h */ = {isa = PBXBuildFile; fileRef = 2097629C815D41139FF87269 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_copying.h */; };
+		0E3E05C52274409A8DA91659 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_log.h */ = {isa = PBXBuildFile; fileRef = F251F0294CD7465E9C44A25C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_log.h */; };
+		0E647C82D48941A4A575E03F /* /Users/Code/GoodBoy/source/GoodBoy/logging.h */ = {isa = PBXBuildFile; fileRef = D4E51A6B445E4010A4E19CF4 /* /Users/Code/GoodBoy/source/GoodBoy/logging.h */; };
+		0F8DB4F6F4B74C4AAF7B03B5 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_android.h */ = {isa = PBXBuildFile; fileRef = 5948A1AFAA5342FF957B8D4E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_android.h */; };
+		1D3B3BCDFCEC4C39A518DAC7 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_clipboard.h */ = {isa = PBXBuildFile; fileRef = 2A98C08908E6424B862924D4 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_clipboard.h */; };
+		21C416C6CD7B44BC818CAD2E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_sensor.h */ = {isa = PBXBuildFile; fileRef = 55F3EF00ECCB4F34AEDA2BF3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_sensor.h */; };
+		23F512F52E21425E9B477585 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_audio.h */ = {isa = PBXBuildFile; fileRef = 74417A65A7ED47E2915AF537 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_audio.h */; };
+		24D2643E989E4C899AC0A7C8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_endian.h */ = {isa = PBXBuildFile; fileRef = 146E7E094A73474BA54462D8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_endian.h */; };
+		24F8C3845B2048E8922FC0C4 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_vulkan.h */ = {isa = PBXBuildFile; fileRef = B1D5C1B6897B4352951C5871 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_vulkan.h */; };
+		263ED2865C93490AB57BD297 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_misc.h */ = {isa = PBXBuildFile; fileRef = E6F900E6ED6F44278C8BD446 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_misc.h */; };
+		2791C2D39FF8495491CAD13D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_name.h */ = {isa = PBXBuildFile; fileRef = DE32B5B577904F78B4C2ADBD /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_name.h */; };
+		2819FC54BF204B4EA31E84DD /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_assert.h */ = {isa = PBXBuildFile; fileRef = BB677215F83E4B238FAF7694 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_assert.h */; };
+		295B7F5615184B1FAA1EF14D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2.h */ = {isa = PBXBuildFile; fileRef = B6911051C3EB418392FBE57B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2.h */; };
+		29AB0407222541D2B1C6FDD9 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test.h */ = {isa = PBXBuildFile; fileRef = 517170A7DA784636A74E222D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test.h */; };
+		2B20540FAABA461E9CAA1798 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_common.h */ = {isa = PBXBuildFile; fileRef = 0F03BF1E0BF24D2F9984493C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_common.h */; };
+		30458BA0536F4282B5EEAA35 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_locale.h */ = {isa = PBXBuildFile; fileRef = 0E812D44528A4B80A8197643 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_locale.h */; };
+		32FE10D4F2ED469AAFC99534 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_psp.h */ = {isa = PBXBuildFile; fileRef = C536BDC2439F4AE9B833D0C0 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_psp.h */; };
+		3302DF9113C043DBB53DE3BA /* /Users/Code/GoodBoy/source/GoodBoy/cartridge.h */ = {isa = PBXBuildFile; fileRef = EA7F2760AC164D759C52BA87 /* /Users/Code/GoodBoy/source/GoodBoy/cartridge.h */; };
+		336031CB8D28493DBF69A116 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_surface.h */ = {isa = PBXBuildFile; fileRef = 102AD00149A143C2B34D9663 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_surface.h */; };
+		4359179179A14260A3BFC05D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_main.h */ = {isa = PBXBuildFile; fileRef = 0D3FA09FCBBD4F728A4A0F91 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_main.h */; };
+		440E8CA7DEF6482E9071CB34 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_loadso.h */ = {isa = PBXBuildFile; fileRef = 9241F7A4D0A9495A91163687 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_loadso.h */; };
+		447C886165E14CC490CF8B1D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_hidapi.h */ = {isa = PBXBuildFile; fileRef = 7F5E71CBC6E2460ABBB3DA45 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_hidapi.h */; };
+		450CEFF9041140B5A25B04D6 /* /Users/Code/GoodBoy/source/GoodBoy/cartridge.cpp */ = {isa = PBXBuildFile; fileRef = A461E16C03A448AB95CA4EFC /* /Users/Code/GoodBoy/source/GoodBoy/cartridge.cpp */; };
+		46CD6022338649B8A5A772E7 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_messagebox.h */ = {isa = PBXBuildFile; fileRef = 3DCD2B7472044E9FA23D1A45 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_messagebox.h */; };
+		47998ACD1FDB495C960710D4 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/close_code.h */ = {isa = PBXBuildFile; fileRef = D649433452F74712B9A9861E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/close_code.h */; };
+		4897EC53E71A4F6B9A0407EA /* /Users/Code/GoodBoy/source/GoodBoy/cpu.h */ = {isa = PBXBuildFile; fileRef = C7F8CFC5D8EB40F490DEA28B /* /Users/Code/GoodBoy/source/GoodBoy/cpu.h */; };
+		4932E255F8684A2596F539CA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_platform.h */ = {isa = PBXBuildFile; fileRef = 188A6C332FB04063A86F3163 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_platform.h */; };
+		4B0942BC0A14445EAF887E1B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_timer.h */ = {isa = PBXBuildFile; fileRef = 46787427A48D49638FA3741C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_timer.h */; };
+		4D72216EAF0843659FB05ED7 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_video.h */ = {isa = PBXBuildFile; fileRef = 4AB736958A434633BF0A10B3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_video.h */; };
+		536E6E3337F046549253724A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_types.h */ = {isa = PBXBuildFile; fileRef = E054B4D87B41445590BED1D6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_types.h */; };
+		53C62885D2954D858FF6F7ED /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_random.h */ = {isa = PBXBuildFile; fileRef = 87E9E9D543674DFF89CD2803 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_random.h */; };
+		568BE8D22941480A981AA37E /* /Users/Code/GoodBoy/source/GoodBoy/timer.h */ = {isa = PBXBuildFile; fileRef = A820A71015214C778A2D9DCC /* /Users/Code/GoodBoy/source/GoodBoy/timer.h */; };
+		586CF24CF8A84D19BD493763 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_version.h */ = {isa = PBXBuildFile; fileRef = E8494ACFBBD84551B2D29CB2 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_version.h */; };
+		5932E7A886C8460FBD2FA0EA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_haptic.h */ = {isa = PBXBuildFile; fileRef = E1BC2B93C46448359627105E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_haptic.h */; };
+		5C5A32904359460480D9263D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_pixels.h */ = {isa = PBXBuildFile; fileRef = D50602E40DFD48218080E2F9 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_pixels.h */; };
+		5F268F70F16F479F95B01365 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_gesture.h */ = {isa = PBXBuildFile; fileRef = D84C681414E04D719549B8B6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_gesture.h */; };
+		6150685C7D754255908ECD34 /* /Users/Code/GoodBoy/source/GoodBoy/main.cpp */ = {isa = PBXBuildFile; fileRef = 4E3C4C9B1BC4415C84D9C780 /* /Users/Code/GoodBoy/source/GoodBoy/main.cpp */; };
+		6434BF2C445943CFAC24D8D9 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_thread.h */ = {isa = PBXBuildFile; fileRef = FB8694D78F3C48478100447B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_thread.h */; };
+		6784C6BAE1B64193A148A569 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_windows.h */ = {isa = PBXBuildFile; fileRef = B431956B2037413788BF5E3E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_windows.h */; };
+		6A6753010BCE4911AC58B76E /* /Users/Code/GoodBoy/source/GoodBoy/memory.cpp */ = {isa = PBXBuildFile; fileRef = A79E1BE019B447B0AE7565F2 /* /Users/Code/GoodBoy/source/GoodBoy/memory.cpp */; };
+		6BB8E72B35C54DB1857681FB /* /Users/Code/GoodBoy/source/GoodBoy/joypad.h */ = {isa = PBXBuildFile; fileRef = 1DC02E8FD0C740259878F09B /* /Users/Code/GoodBoy/source/GoodBoy/joypad.h */; };
+		6C562CCE6624424EAFE5956B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_power.h */ = {isa = PBXBuildFile; fileRef = 2B100A6DE5E54A84846B16AE /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_power.h */; };
+		6C9A1EA547064D058CF9892E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_mutex.h */ = {isa = PBXBuildFile; fileRef = 1794A3A926614901B2605667 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_mutex.h */; };
+		70A46511F252494E976F4297 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_md5.h */ = {isa = PBXBuildFile; fileRef = 152EFEBE420543E4BB0CEBC3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_md5.h */; };
+		75DCA26A45F04D6AAB916F64 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_rwops.h */ = {isa = PBXBuildFile; fileRef = F2011851F61C402A96522C16 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_rwops.h */; };
+		78E801A68F884EB1A82DB722 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_fuzzer.h */ = {isa = PBXBuildFile; fileRef = D7197481F4F544FABE4A625A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_fuzzer.h */; };
+		7A3868B68DFA48C4AA9AC55E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_harness.h */ = {isa = PBXBuildFile; fileRef = 7BA7BDB38C9942FD94D26F21 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_harness.h */; };
+		7B48DB1F6A4A4686BF15D33F /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_shape.h */ = {isa = PBXBuildFile; fileRef = A7069D69825D4AF091289745 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_shape.h */; };
+		84B34444BEF946D2BE334838 /* /Users/Code/GoodBoy/source/GoodBoy/apu.h */ = {isa = PBXBuildFile; fileRef = C00A507B0B5848A0AFFD27C9 /* /Users/Code/GoodBoy/source/GoodBoy/apu.h */; };
+		894EDDA939A64DBFB9C3ADF1 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_syswm.h */ = {isa = PBXBuildFile; fileRef = 71D9DE05A0144EAC9ACA9F30 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_syswm.h */; };
+		8C26B7CB76CF4C0F879883C0 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/begin_code.h */ = {isa = PBXBuildFile; fileRef = DDFAF06464014B1BAE0607E6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/begin_code.h */; };
+		8CB758F2AF344CD3967A8E33 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_touch.h */ = {isa = PBXBuildFile; fileRef = E14F1154B17245189A96A295 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_touch.h */; };
+		8E4EF0A1382D4433A41F6662 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_events.h */ = {isa = PBXBuildFile; fileRef = 6EA19F1813404D089D057830 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_events.h */; };
+		91679574DA2D4FC686B323AF /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_compare.h */ = {isa = PBXBuildFile; fileRef = 5E6040B8C993455E93CDF8C7 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_compare.h */; };
+		95F5EC06473C47C0A9229B5D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_cpuinfo.h */ = {isa = PBXBuildFile; fileRef = 432C9DDD46434C7C93066CDA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_cpuinfo.h */; };
+		96EC23C0F43E4BF9A0E3A001 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_bits.h */ = {isa = PBXBuildFile; fileRef = AF181E59FBE34BEB9CCAAB9E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_bits.h */; };
+		9A22AD24B36A406E82650CD3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_winrt.h */ = {isa = PBXBuildFile; fileRef = EEED54EF2F4E475BB46A7BD7 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_winrt.h */; };
+		9D3431F238594386B3D9ADEA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2.h */ = {isa = PBXBuildFile; fileRef = 8ADADA8A85AC41C190A31F55 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2.h */; };
+		A29FDFAFCB654C09AE3035F2 /* /Users/Code/GoodBoy/source/GoodBoy/types.h */ = {isa = PBXBuildFile; fileRef = AF985C329FA64ECCBAE52142 /* /Users/Code/GoodBoy/source/GoodBoy/types.h */; };
+		AA14E259FC644F94AF39EC9B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_minimal.h */ = {isa = PBXBuildFile; fileRef = DFED492861D74A3C9D2A5C47 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_minimal.h */; };
+		AB5DA55FAF9446C6B35F27D6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_filesystem.h */ = {isa = PBXBuildFile; fileRef = A6BD6AC2A59F443987ABF646 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_filesystem.h */; };
+		AB8C9155ABE54FED89007173 /* /Users/Code/GoodBoy/source/GoodBoy/system.cpp */ = {isa = PBXBuildFile; fileRef = EA0C99B22709455396D2F510 /* /Users/Code/GoodBoy/source/GoodBoy/system.cpp */; };
+		ADC5715373B74BB6840C6168 /* /Users/Code/GoodBoy/source/GoodBoy/timer.cpp */ = {isa = PBXBuildFile; fileRef = A153930207BA46AC99BB4041 /* /Users/Code/GoodBoy/source/GoodBoy/timer.cpp */; };
+		AF1CAFC4AACC4CFFA974D6D8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_revision.h */ = {isa = PBXBuildFile; fileRef = 8D09AAA8117743AC982BED06 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_revision.h */; };
+		AF571B58CDD5432DA338E5FE /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_wiz.h */ = {isa = PBXBuildFile; fileRef = 09B8CC2222944CF682C49D0B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_wiz.h */; };
+		B16C3BA73D734392AE7C5B0D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_egl.h */ = {isa = PBXBuildFile; fileRef = 90012B69811048E299BD2225 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_egl.h */; };
+		B79FF10C47AB418DB5AE6C08 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_keyboard.h */ = {isa = PBXBuildFile; fileRef = 0C4538B2F5FC47109E80EAD0 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_keyboard.h */; };
+		B936838F3ECD43C48D28E8C8 /* /Users/Code/GoodBoy/source/GoodBoy/joypad.cpp */ = {isa = PBXBuildFile; fileRef = A07B8CA6367A4E2B93EE3ABD /* /Users/Code/GoodBoy/source/GoodBoy/joypad.cpp */; };
+		BC0F5B74C44D4474B0397076 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_khrplatform.h */ = {isa = PBXBuildFile; fileRef = 35006EA306434CFEB7FF81DA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_khrplatform.h */; };
+		BC4B09F341D3485392CDEAA9 /* /Users/Code/GoodBoy/source/GoodBoy/system.h */ = {isa = PBXBuildFile; fileRef = 6E404154B3364D4C812C039C /* /Users/Code/GoodBoy/source/GoodBoy/system.h */; };
+		BCBC988AE3B4401490F083EF /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_gamecontroller.h */ = {isa = PBXBuildFile; fileRef = 4B7034D8FDE6478089D44385 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_gamecontroller.h */; };
+		C2E89F3877CF4F66A2B8611F /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_crc32.h */ = {isa = PBXBuildFile; fileRef = CBB9D2ACD9FD431497FA5581 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_crc32.h */; };
+		C38549B10E99428DBA02B767 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_rect.h */ = {isa = PBXBuildFile; fileRef = 8B33968831B542B8ADEBB8E4 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_rect.h */; };
+		C3E78608B9FB47E68B3DB4B5 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_quit.h */ = {isa = PBXBuildFile; fileRef = 3532C6E6E77045CC9E6975F6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_quit.h */; };
+		C3F988462F6B4616A3147110 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_assert.h */ = {isa = PBXBuildFile; fileRef = A9237585114741D1A7398E51 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_assert.h */; };
+		CA39A04A833C43F08798D933 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_joystick.h */ = {isa = PBXBuildFile; fileRef = 6C0D37B3AA6944D295F07DA6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_joystick.h */; };
+		CDF04ACE567A46C2A4122351 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengl.h */ = {isa = PBXBuildFile; fileRef = FF38CAB7E89F483EAD09BD8A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengl.h */; };
+		CE432399BAD04EDEA93FFB00 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_log.h */ = {isa = PBXBuildFile; fileRef = 46984C48A5624A9EA74B5853 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_log.h */; };
+		D05999EB95A445E8A23DD048 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengl_glext.h */ = {isa = PBXBuildFile; fileRef = F4134A3B936B460894BFDEC8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengl_glext.h */; };
+		D223023716944AB9A9676FBE /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config.h */ = {isa = PBXBuildFile; fileRef = 452D2D8065A844FBBBE2492B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config.h */; };
+		D296E13199B042638E047AC5 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_atomic.h */ = {isa = PBXBuildFile; fileRef = 4075C9268E6040169B2CE3DA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_atomic.h */; };
+		D65ACD233A844F2FA5E67BE3 /* /Users/Code/GoodBoy/source/GoodBoy/display.h */ = {isa = PBXBuildFile; fileRef = F6E999A24D00416E81A4D389 /* /Users/Code/GoodBoy/source/GoodBoy/display.h */; };
+		D78780ED92034850A114BCB8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_pandora.h */ = {isa = PBXBuildFile; fileRef = F98A22E5E7E74F269B09C50A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_pandora.h */; };
+		DDDEE3D67D1B48ADACD42555 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_hints.h */ = {isa = PBXBuildFile; fileRef = CF5980891A064BD690A4405C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_hints.h */; };
+		E079E712F54F4D128A061145 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_error.h */ = {isa = PBXBuildFile; fileRef = 89C74240E9204065BE2D0E70 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_error.h */; };
+		E0834EEDECDB4D98889767F6 /* /Users/Code/GoodBoy/source/GoodBoy/memory.h */ = {isa = PBXBuildFile; fileRef = 22A39EB483B64A48BA6B1A20 /* /Users/Code/GoodBoy/source/GoodBoy/memory.h */; };
+		E356B8493CB44B4EB4D1B968 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_memory.h */ = {isa = PBXBuildFile; fileRef = B439BC18BA5645A3BAB3E4C8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_memory.h */; };
+		E830D14CFE0F46B8A1D23554 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_render.h */ = {isa = PBXBuildFile; fileRef = DE95B3DA576D444A87F17C9C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_render.h */; };
+		E8DFAC75C0454C03ABE2C086 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_stdinc.h */ = {isa = PBXBuildFile; fileRef = 4D9204D993224DFDA5C275AE /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_stdinc.h */; };
+		E9A6ABB3CDD048DC9BA05DFF /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_macosx.h */ = {isa = PBXBuildFile; fileRef = B0EECF6BC13A456491AD8F54 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_macosx.h */; };
+		EABB3757B3B2426F817F7634 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_system.h */ = {isa = PBXBuildFile; fileRef = 4E01A80020074CA287D76F7A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_system.h */; };
+		EBA0065D321F49D78F23BE18 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_metal.h */ = {isa = PBXBuildFile; fileRef = A1534498074B4323A91C7BCD /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_metal.h */; };
+		EC1AD278B9B5400087DB5AA1 /* /Users/Code/GoodBoy/source/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = 5DC4AAC2F8DB4A1D870A60C3 /* /Users/Code/GoodBoy/source/CMakeLists.txt */; };
+		EEFAD2F413C3466E99881AC2 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_images.h */ = {isa = PBXBuildFile; fileRef = E55BE5181E39494980F45B92 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_images.h */; };
+		F43E5AB2C6B74F3DBFD625C9 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_mouse.h */ = {isa = PBXBuildFile; fileRef = 41DC2FB0D3BC43E493F1622D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_mouse.h */; };
+		F6EF8F324FBD44E3AA216D91 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2ext.h */ = {isa = PBXBuildFile; fileRef = 3661F4F02D474CE49E4C2D13 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2ext.h */; };
+		F7B0DFEE7521407699705975 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_blendmode.h */ = {isa = PBXBuildFile; fileRef = 1E4D1424930B4D0D81B9BE40 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_blendmode.h */; };
+		FBD7315D1E8F43A19515F32E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_image.h */ = {isa = PBXBuildFile; fileRef = 8A281F3470E04DB597B2ACFF /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_image.h */; };
+		FDED74BBC0204A77B389BC42 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL.h */ = {isa = PBXBuildFile; fileRef = E6941B66FB8C496E8093A076 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL.h */; };
+		FE1679710A6846539FAF4C9E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_iphoneos.h */ = {isa = PBXBuildFile; fileRef = 04974F7E71374AF08760CA19 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_iphoneos.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		3758D863F0984A42891838E1 /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+		382DED88B047411099BF487C /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		61D691BC79214FD2BEDC0B08 /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+		C270F6889B824501A1CD990D /* RelWithDebInfo */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = RelWithDebInfo;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		20A6215D66AF486AA2582300 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 04848F05A73F48E49F33EB82 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2BC754A5368641BD993A8B14;
+			remoteInfo = ZERO_CHECK;
+		};
+		7FFAB3E900E94EAF9D270E99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 04848F05A73F48E49F33EB82 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2BC754A5368641BD993A8B14;
+			remoteInfo = ZERO_CHECK;
+		};
+		9212638E063946CDB63750B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 04848F05A73F48E49F33EB82 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5F401A2E2CD14D6AA7A7B158;
+			remoteInfo = GoodBoy;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		04974F7E71374AF08760CA19 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_iphoneos.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config_iphoneos.h; path = "third_party/SDL2-2.0.4/include/SDL_config_iphoneos.h"; sourceTree = SOURCE_ROOT; };
+		09B8CC2222944CF682C49D0B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_wiz.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config_wiz.h; path = "third_party/SDL2-2.0.4/include/SDL_config_wiz.h"; sourceTree = SOURCE_ROOT; };
+		0C4538B2F5FC47109E80EAD0 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_keyboard.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_keyboard.h; path = "third_party/SDL2-2.0.4/include/SDL_keyboard.h"; sourceTree = SOURCE_ROOT; };
+		0D3FA09FCBBD4F728A4A0F91 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_main.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_main.h; path = "third_party/SDL2-2.0.4/include/SDL_main.h"; sourceTree = SOURCE_ROOT; };
+		0E812D44528A4B80A8197643 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_locale.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_locale.h; path = "third_party/SDL2-2.0.4/include/SDL_locale.h"; sourceTree = SOURCE_ROOT; };
+		0F03BF1E0BF24D2F9984493C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_common.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_common.h; path = "third_party/SDL2-2.0.4/include/SDL_test_common.h"; sourceTree = SOURCE_ROOT; };
+		102AD00149A143C2B34D9663 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_surface.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_surface.h; path = "third_party/SDL2-2.0.4/include/SDL_surface.h"; sourceTree = SOURCE_ROOT; };
+		146E7E094A73474BA54462D8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_endian.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_endian.h; path = "third_party/SDL2-2.0.4/include/SDL_endian.h"; sourceTree = SOURCE_ROOT; };
+		152EFEBE420543E4BB0CEBC3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_md5.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_md5.h; path = "third_party/SDL2-2.0.4/include/SDL_test_md5.h"; sourceTree = SOURCE_ROOT; };
+		1794A3A926614901B2605667 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_mutex.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_mutex.h; path = "third_party/SDL2-2.0.4/include/SDL_mutex.h"; sourceTree = SOURCE_ROOT; };
+		188A6C332FB04063A86F3163 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_platform.h; path = "third_party/SDL2-2.0.4/include/SDL_platform.h"; sourceTree = SOURCE_ROOT; };
+		1DC02E8FD0C740259878F09B /* /Users/Code/GoodBoy/source/GoodBoy/joypad.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = joypad.h; path = GoodBoy/joypad.h; sourceTree = SOURCE_ROOT; };
+		1E4D1424930B4D0D81B9BE40 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_blendmode.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_blendmode.h; path = "third_party/SDL2-2.0.4/include/SDL_blendmode.h"; sourceTree = SOURCE_ROOT; };
+		2097629C815D41139FF87269 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_copying.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_copying.h; path = "third_party/SDL2-2.0.4/include/SDL_copying.h"; sourceTree = SOURCE_ROOT; };
+		2235F57460474078A48A1B03 /* /Users/Code/GoodBoy/source/GoodBoy/cpu.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = cpu.cpp; path = GoodBoy/cpu.cpp; sourceTree = SOURCE_ROOT; };
+		22A39EB483B64A48BA6B1A20 /* /Users/Code/GoodBoy/source/GoodBoy/memory.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = memory.h; path = GoodBoy/memory.h; sourceTree = SOURCE_ROOT; };
+		2A98C08908E6424B862924D4 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_clipboard.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_clipboard.h; path = "third_party/SDL2-2.0.4/include/SDL_clipboard.h"; sourceTree = SOURCE_ROOT; };
+		2B100A6DE5E54A84846B16AE /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_power.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_power.h; path = "third_party/SDL2-2.0.4/include/SDL_power.h"; sourceTree = SOURCE_ROOT; };
+		35006EA306434CFEB7FF81DA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_khrplatform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_opengles2_khrplatform.h; path = "third_party/SDL2-2.0.4/include/SDL_opengles2_khrplatform.h"; sourceTree = SOURCE_ROOT; };
+		3532C6E6E77045CC9E6975F6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_quit.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_quit.h; path = "third_party/SDL2-2.0.4/include/SDL_quit.h"; sourceTree = SOURCE_ROOT; };
+		3661F4F02D474CE49E4C2D13 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2ext.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_opengles2_gl2ext.h; path = "third_party/SDL2-2.0.4/include/SDL_opengles2_gl2ext.h"; sourceTree = SOURCE_ROOT; };
+		3DCD2B7472044E9FA23D1A45 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_messagebox.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_messagebox.h; path = "third_party/SDL2-2.0.4/include/SDL_messagebox.h"; sourceTree = SOURCE_ROOT; };
+		4075C9268E6040169B2CE3DA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_atomic.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_atomic.h; path = "third_party/SDL2-2.0.4/include/SDL_atomic.h"; sourceTree = SOURCE_ROOT; };
+		41DC2FB0D3BC43E493F1622D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_mouse.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_mouse.h; path = "third_party/SDL2-2.0.4/include/SDL_mouse.h"; sourceTree = SOURCE_ROOT; };
+		432C9DDD46434C7C93066CDA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_cpuinfo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_cpuinfo.h; path = "third_party/SDL2-2.0.4/include/SDL_cpuinfo.h"; sourceTree = SOURCE_ROOT; };
+		452D2D8065A844FBBBE2492B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config.h; path = "third_party/SDL2-2.0.4/include/SDL_config.h"; sourceTree = SOURCE_ROOT; };
+		46787427A48D49638FA3741C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_timer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_timer.h; path = "third_party/SDL2-2.0.4/include/SDL_timer.h"; sourceTree = SOURCE_ROOT; };
+		46984C48A5624A9EA74B5853 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_log.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_log.h; path = "third_party/SDL2-2.0.4/include/SDL_log.h"; sourceTree = SOURCE_ROOT; };
+		4AB736958A434633BF0A10B3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_video.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_video.h; path = "third_party/SDL2-2.0.4/include/SDL_video.h"; sourceTree = SOURCE_ROOT; };
+		4B7034D8FDE6478089D44385 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_gamecontroller.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_gamecontroller.h; path = "third_party/SDL2-2.0.4/include/SDL_gamecontroller.h"; sourceTree = SOURCE_ROOT; };
+		4BD567716CE540CEA6B6DF98 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_keycode.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_keycode.h; path = "third_party/SDL2-2.0.4/include/SDL_keycode.h"; sourceTree = SOURCE_ROOT; };
+		4D9204D993224DFDA5C275AE /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_stdinc.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_stdinc.h; path = "third_party/SDL2-2.0.4/include/SDL_stdinc.h"; sourceTree = SOURCE_ROOT; };
+		4E01A80020074CA287D76F7A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_system.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_system.h; path = "third_party/SDL2-2.0.4/include/SDL_system.h"; sourceTree = SOURCE_ROOT; };
+		4E3C4C9B1BC4415C84D9C780 /* /Users/Code/GoodBoy/source/GoodBoy/main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cpp; path = GoodBoy/main.cpp; sourceTree = SOURCE_ROOT; };
+		517170A7DA784636A74E222D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test.h; path = "third_party/SDL2-2.0.4/include/SDL_test.h"; sourceTree = SOURCE_ROOT; };
+		55F3EF00ECCB4F34AEDA2BF3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_sensor.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_sensor.h; path = "third_party/SDL2-2.0.4/include/SDL_sensor.h"; sourceTree = SOURCE_ROOT; };
+		5948A1AFAA5342FF957B8D4E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_android.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config_android.h; path = "third_party/SDL2-2.0.4/include/SDL_config_android.h"; sourceTree = SOURCE_ROOT; };
+		5DC4AAC2F8DB4A1D870A60C3 /* /Users/Code/GoodBoy/source/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		5E6040B8C993455E93CDF8C7 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_compare.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_compare.h; path = "third_party/SDL2-2.0.4/include/SDL_test_compare.h"; sourceTree = SOURCE_ROOT; };
+		6C0D37B3AA6944D295F07DA6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_joystick.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_joystick.h; path = "third_party/SDL2-2.0.4/include/SDL_joystick.h"; sourceTree = SOURCE_ROOT; };
+		6E404154B3364D4C812C039C /* /Users/Code/GoodBoy/source/GoodBoy/system.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = system.h; path = GoodBoy/system.h; sourceTree = SOURCE_ROOT; };
+		6EA19F1813404D089D057830 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_events.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_events.h; path = "third_party/SDL2-2.0.4/include/SDL_events.h"; sourceTree = SOURCE_ROOT; };
+		71D9DE05A0144EAC9ACA9F30 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_syswm.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_syswm.h; path = "third_party/SDL2-2.0.4/include/SDL_syswm.h"; sourceTree = SOURCE_ROOT; };
+		72EB6108525647289863CF98 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_font.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_font.h; path = "third_party/SDL2-2.0.4/include/SDL_test_font.h"; sourceTree = SOURCE_ROOT; };
+		74417A65A7ED47E2915AF537 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_audio.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_audio.h; path = "third_party/SDL2-2.0.4/include/SDL_audio.h"; sourceTree = SOURCE_ROOT; };
+		7BA7BDB38C9942FD94D26F21 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_harness.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_harness.h; path = "third_party/SDL2-2.0.4/include/SDL_test_harness.h"; sourceTree = SOURCE_ROOT; };
+		7F5E71CBC6E2460ABBB3DA45 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_hidapi.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_hidapi.h; path = "third_party/SDL2-2.0.4/include/SDL_hidapi.h"; sourceTree = SOURCE_ROOT; };
+		87E9E9D543674DFF89CD2803 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_random.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_random.h; path = "third_party/SDL2-2.0.4/include/SDL_test_random.h"; sourceTree = SOURCE_ROOT; };
+		89C74240E9204065BE2D0E70 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_error.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_error.h; path = "third_party/SDL2-2.0.4/include/SDL_error.h"; sourceTree = SOURCE_ROOT; };
+		8A281F3470E04DB597B2ACFF /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_image.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_image.h; path = "third_party/SDL2-2.0.4/include/SDL_image.h"; sourceTree = SOURCE_ROOT; };
+		8ADADA8A85AC41C190A31F55 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_opengles2.h; path = "third_party/SDL2-2.0.4/include/SDL_opengles2.h"; sourceTree = SOURCE_ROOT; };
+		8B33968831B542B8ADEBB8E4 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_rect.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_rect.h; path = "third_party/SDL2-2.0.4/include/SDL_rect.h"; sourceTree = SOURCE_ROOT; };
+		8D09AAA8117743AC982BED06 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_revision.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_revision.h; path = "third_party/SDL2-2.0.4/include/SDL_revision.h"; sourceTree = SOURCE_ROOT; };
+		90012B69811048E299BD2225 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_egl.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_egl.h; path = "third_party/SDL2-2.0.4/include/SDL_egl.h"; sourceTree = SOURCE_ROOT; };
+		9241F7A4D0A9495A91163687 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_loadso.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_loadso.h; path = "third_party/SDL2-2.0.4/include/SDL_loadso.h"; sourceTree = SOURCE_ROOT; };
+		93D823C1B0954ECC9AEC8B97 /* /Users/Code/GoodBoy/source/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		982B9BAA30AF4C3E8D25E3BF /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_scancode.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_scancode.h; path = "third_party/SDL2-2.0.4/include/SDL_scancode.h"; sourceTree = SOURCE_ROOT; };
+		A07B8CA6367A4E2B93EE3ABD /* /Users/Code/GoodBoy/source/GoodBoy/joypad.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = joypad.cpp; path = GoodBoy/joypad.cpp; sourceTree = SOURCE_ROOT; };
+		A1534498074B4323A91C7BCD /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_metal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_metal.h; path = "third_party/SDL2-2.0.4/include/SDL_metal.h"; sourceTree = SOURCE_ROOT; };
+		A153930207BA46AC99BB4041 /* /Users/Code/GoodBoy/source/GoodBoy/timer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = timer.cpp; path = GoodBoy/timer.cpp; sourceTree = SOURCE_ROOT; };
+		A461E16C03A448AB95CA4EFC /* /Users/Code/GoodBoy/source/GoodBoy/cartridge.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = cartridge.cpp; path = GoodBoy/cartridge.cpp; sourceTree = SOURCE_ROOT; };
+		A6BD6AC2A59F443987ABF646 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_filesystem.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_filesystem.h; path = "third_party/SDL2-2.0.4/include/SDL_filesystem.h"; sourceTree = SOURCE_ROOT; };
+		A7069D69825D4AF091289745 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_shape.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_shape.h; path = "third_party/SDL2-2.0.4/include/SDL_shape.h"; sourceTree = SOURCE_ROOT; };
+		A79E1BE019B447B0AE7565F2 /* /Users/Code/GoodBoy/source/GoodBoy/memory.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = memory.cpp; path = GoodBoy/memory.cpp; sourceTree = SOURCE_ROOT; };
+		A820A71015214C778A2D9DCC /* /Users/Code/GoodBoy/source/GoodBoy/timer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = timer.h; path = GoodBoy/timer.h; sourceTree = SOURCE_ROOT; };
+		A9237585114741D1A7398E51 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_assert.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_assert.h; path = "third_party/SDL2-2.0.4/include/SDL_assert.h"; sourceTree = SOURCE_ROOT; };
+		AF181E59FBE34BEB9CCAAB9E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_bits.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_bits.h; path = "third_party/SDL2-2.0.4/include/SDL_bits.h"; sourceTree = SOURCE_ROOT; };
+		AF985C329FA64ECCBAE52142 /* /Users/Code/GoodBoy/source/GoodBoy/types.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = types.h; path = GoodBoy/types.h; sourceTree = SOURCE_ROOT; };
+		B0EECF6BC13A456491AD8F54 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_macosx.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config_macosx.h; path = "third_party/SDL2-2.0.4/include/SDL_config_macosx.h"; sourceTree = SOURCE_ROOT; };
+		B1D5C1B6897B4352951C5871 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_vulkan.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_vulkan.h; path = "third_party/SDL2-2.0.4/include/SDL_vulkan.h"; sourceTree = SOURCE_ROOT; };
+		B431956B2037413788BF5E3E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_windows.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config_windows.h; path = "third_party/SDL2-2.0.4/include/SDL_config_windows.h"; sourceTree = SOURCE_ROOT; };
+		B439BC18BA5645A3BAB3E4C8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_memory.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_memory.h; path = "third_party/SDL2-2.0.4/include/SDL_test_memory.h"; sourceTree = SOURCE_ROOT; };
+		B6911051C3EB418392FBE57B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_opengles2_gl2.h; path = "third_party/SDL2-2.0.4/include/SDL_opengles2_gl2.h"; sourceTree = SOURCE_ROOT; };
+		BB677215F83E4B238FAF7694 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_assert.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_assert.h; path = "third_party/SDL2-2.0.4/include/SDL_test_assert.h"; sourceTree = SOURCE_ROOT; };
+		C00A507B0B5848A0AFFD27C9 /* /Users/Code/GoodBoy/source/GoodBoy/apu.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = apu.h; path = GoodBoy/apu.h; sourceTree = SOURCE_ROOT; };
+		C536BDC2439F4AE9B833D0C0 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_psp.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config_psp.h; path = "third_party/SDL2-2.0.4/include/SDL_config_psp.h"; sourceTree = SOURCE_ROOT; };
+		C7F8CFC5D8EB40F490DEA28B /* /Users/Code/GoodBoy/source/GoodBoy/cpu.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cpu.h; path = GoodBoy/cpu.h; sourceTree = SOURCE_ROOT; };
+		C868DC90951D4F608D2763A3 /* GoodBoy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = GoodBoy; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBB9D2ACD9FD431497FA5581 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_crc32.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_crc32.h; path = "third_party/SDL2-2.0.4/include/SDL_test_crc32.h"; sourceTree = SOURCE_ROOT; };
+		CF5980891A064BD690A4405C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_hints.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_hints.h; path = "third_party/SDL2-2.0.4/include/SDL_hints.h"; sourceTree = SOURCE_ROOT; };
+		D4E51A6B445E4010A4E19CF4 /* /Users/Code/GoodBoy/source/GoodBoy/logging.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = logging.h; path = GoodBoy/logging.h; sourceTree = SOURCE_ROOT; };
+		D50602E40DFD48218080E2F9 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_pixels.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_pixels.h; path = "third_party/SDL2-2.0.4/include/SDL_pixels.h"; sourceTree = SOURCE_ROOT; };
+		D649433452F74712B9A9861E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/close_code.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = close_code.h; path = "third_party/SDL2-2.0.4/include/close_code.h"; sourceTree = SOURCE_ROOT; };
+		D7197481F4F544FABE4A625A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_fuzzer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_fuzzer.h; path = "third_party/SDL2-2.0.4/include/SDL_test_fuzzer.h"; sourceTree = SOURCE_ROOT; };
+		D84C681414E04D719549B8B6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_gesture.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_gesture.h; path = "third_party/SDL2-2.0.4/include/SDL_gesture.h"; sourceTree = SOURCE_ROOT; };
+		DDFAF06464014B1BAE0607E6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/begin_code.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = begin_code.h; path = "third_party/SDL2-2.0.4/include/begin_code.h"; sourceTree = SOURCE_ROOT; };
+		DE32B5B577904F78B4C2ADBD /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_name.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_name.h; path = "third_party/SDL2-2.0.4/include/SDL_name.h"; sourceTree = SOURCE_ROOT; };
+		DE95B3DA576D444A87F17C9C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_render.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_render.h; path = "third_party/SDL2-2.0.4/include/SDL_render.h"; sourceTree = SOURCE_ROOT; };
+		DFED492861D74A3C9D2A5C47 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_minimal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config_minimal.h; path = "third_party/SDL2-2.0.4/include/SDL_config_minimal.h"; sourceTree = SOURCE_ROOT; };
+		E054B4D87B41445590BED1D6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_types.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_types.h; path = "third_party/SDL2-2.0.4/include/SDL_types.h"; sourceTree = SOURCE_ROOT; };
+		E14F1154B17245189A96A295 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_touch.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_touch.h; path = "third_party/SDL2-2.0.4/include/SDL_touch.h"; sourceTree = SOURCE_ROOT; };
+		E16F51ED1DC7460781DCC5B4 /* /Users/Code/GoodBoy/source/GoodBoy/display.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = display.cpp; path = GoodBoy/display.cpp; sourceTree = SOURCE_ROOT; };
+		E1BC2B93C46448359627105E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_haptic.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_haptic.h; path = "third_party/SDL2-2.0.4/include/SDL_haptic.h"; sourceTree = SOURCE_ROOT; };
+		E55BE5181E39494980F45B92 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_images.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_images.h; path = "third_party/SDL2-2.0.4/include/SDL_test_images.h"; sourceTree = SOURCE_ROOT; };
+		E6941B66FB8C496E8093A076 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL.h; path = "third_party/SDL2-2.0.4/include/SDL.h"; sourceTree = SOURCE_ROOT; };
+		E6F900E6ED6F44278C8BD446 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_misc.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_misc.h; path = "third_party/SDL2-2.0.4/include/SDL_misc.h"; sourceTree = SOURCE_ROOT; };
+		E8494ACFBBD84551B2D29CB2 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_version.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_version.h; path = "third_party/SDL2-2.0.4/include/SDL_version.h"; sourceTree = SOURCE_ROOT; };
+		EA0C99B22709455396D2F510 /* /Users/Code/GoodBoy/source/GoodBoy/system.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = system.cpp; path = GoodBoy/system.cpp; sourceTree = SOURCE_ROOT; };
+		EA7F2760AC164D759C52BA87 /* /Users/Code/GoodBoy/source/GoodBoy/cartridge.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cartridge.h; path = GoodBoy/cartridge.h; sourceTree = SOURCE_ROOT; };
+		EEED54EF2F4E475BB46A7BD7 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_winrt.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config_winrt.h; path = "third_party/SDL2-2.0.4/include/SDL_config_winrt.h"; sourceTree = SOURCE_ROOT; };
+		F2011851F61C402A96522C16 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_rwops.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_rwops.h; path = "third_party/SDL2-2.0.4/include/SDL_rwops.h"; sourceTree = SOURCE_ROOT; };
+		F251F0294CD7465E9C44A25C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_log.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_test_log.h; path = "third_party/SDL2-2.0.4/include/SDL_test_log.h"; sourceTree = SOURCE_ROOT; };
+		F397C5FBDDBF4F13AF952187 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_opengles.h; path = "third_party/SDL2-2.0.4/include/SDL_opengles.h"; sourceTree = SOURCE_ROOT; };
+		F4134A3B936B460894BFDEC8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengl_glext.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_opengl_glext.h; path = "third_party/SDL2-2.0.4/include/SDL_opengl_glext.h"; sourceTree = SOURCE_ROOT; };
+		F6E999A24D00416E81A4D389 /* /Users/Code/GoodBoy/source/GoodBoy/display.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = display.h; path = GoodBoy/display.h; sourceTree = SOURCE_ROOT; };
+		F98A22E5E7E74F269B09C50A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_pandora.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_config_pandora.h; path = "third_party/SDL2-2.0.4/include/SDL_config_pandora.h"; sourceTree = SOURCE_ROOT; };
+		FB320BA96A2B42CA9CCF0026 /* /Users/Code/GoodBoy/source/GoodBoy/apu.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = apu.cpp; path = GoodBoy/apu.cpp; sourceTree = SOURCE_ROOT; };
+		FB8694D78F3C48478100447B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_thread.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_thread.h; path = "third_party/SDL2-2.0.4/include/SDL_thread.h"; sourceTree = SOURCE_ROOT; };
+		FC27DBCDE39547F5A373E12F /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_opengles2_gl2platform.h; path = "third_party/SDL2-2.0.4/include/SDL_opengles2_gl2platform.h"; sourceTree = SOURCE_ROOT; };
+		FF38CAB7E89F483EAD09BD8A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengl.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SDL_opengl.h; path = "third_party/SDL2-2.0.4/include/SDL_opengl.h"; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7DD93FE1F86D44D99108490A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0578AF69C1D3471E83D872FF /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		0873AF6F2C6F4DAFA9567CB2 = {
+			isa = PBXGroup;
+			children = (
+				11D0FB55BF7C49ABA157C96A /* GoodBoy */,
+				F1DDEEEBB1F74F108A8C40BF /* ALL_BUILD */,
+				41F1842DB26E4C16AA4B12AA /* Products */,
+				419812451B9D4103B6021A36 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		11D0FB55BF7C49ABA157C96A /* GoodBoy */ = {
+			isa = PBXGroup;
+			children = (
+				3F87101EF1EB4F0E9EE9F896 /* GoodBoy */,
+				A059219BAD0D47F2843FE0C6 /* third_party */,
+				5DC4AAC2F8DB4A1D870A60C3 /* /Users/Code/GoodBoy/source/CMakeLists.txt */,
+			);
+			name = GoodBoy;
+			sourceTree = "<group>";
+		};
+		3F87101EF1EB4F0E9EE9F896 /* GoodBoy */ = {
+			isa = PBXGroup;
+			children = (
+				FB320BA96A2B42CA9CCF0026 /* /Users/Code/GoodBoy/source/GoodBoy/apu.cpp */,
+				C00A507B0B5848A0AFFD27C9 /* /Users/Code/GoodBoy/source/GoodBoy/apu.h */,
+				A461E16C03A448AB95CA4EFC /* /Users/Code/GoodBoy/source/GoodBoy/cartridge.cpp */,
+				EA7F2760AC164D759C52BA87 /* /Users/Code/GoodBoy/source/GoodBoy/cartridge.h */,
+				2235F57460474078A48A1B03 /* /Users/Code/GoodBoy/source/GoodBoy/cpu.cpp */,
+				C7F8CFC5D8EB40F490DEA28B /* /Users/Code/GoodBoy/source/GoodBoy/cpu.h */,
+				E16F51ED1DC7460781DCC5B4 /* /Users/Code/GoodBoy/source/GoodBoy/display.cpp */,
+				F6E999A24D00416E81A4D389 /* /Users/Code/GoodBoy/source/GoodBoy/display.h */,
+				A07B8CA6367A4E2B93EE3ABD /* /Users/Code/GoodBoy/source/GoodBoy/joypad.cpp */,
+				1DC02E8FD0C740259878F09B /* /Users/Code/GoodBoy/source/GoodBoy/joypad.h */,
+				D4E51A6B445E4010A4E19CF4 /* /Users/Code/GoodBoy/source/GoodBoy/logging.h */,
+				4E3C4C9B1BC4415C84D9C780 /* /Users/Code/GoodBoy/source/GoodBoy/main.cpp */,
+				A79E1BE019B447B0AE7565F2 /* /Users/Code/GoodBoy/source/GoodBoy/memory.cpp */,
+				22A39EB483B64A48BA6B1A20 /* /Users/Code/GoodBoy/source/GoodBoy/memory.h */,
+				EA0C99B22709455396D2F510 /* /Users/Code/GoodBoy/source/GoodBoy/system.cpp */,
+				6E404154B3364D4C812C039C /* /Users/Code/GoodBoy/source/GoodBoy/system.h */,
+				A153930207BA46AC99BB4041 /* /Users/Code/GoodBoy/source/GoodBoy/timer.cpp */,
+				A820A71015214C778A2D9DCC /* /Users/Code/GoodBoy/source/GoodBoy/timer.h */,
+				AF985C329FA64ECCBAE52142 /* /Users/Code/GoodBoy/source/GoodBoy/types.h */,
+			);
+			name = GoodBoy;
+			sourceTree = "<group>";
+		};
+		419812451B9D4103B6021A36 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		41F1842DB26E4C16AA4B12AA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C868DC90951D4F608D2763A3 /* GoodBoy */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A059219BAD0D47F2843FE0C6 /* third_party */ = {
+			isa = PBXGroup;
+			children = (
+				BC3372571C264EB39BB98059 /* SDL2-2.0.4 */,
+			);
+			name = third_party;
+			sourceTree = "<group>";
+		};
+		BC3372571C264EB39BB98059 /* SDL2-2.0.4 */ = {
+			isa = PBXGroup;
+			children = (
+				DAE4C7FB56C84FA08EB10863 /* include */,
+			);
+			name = "SDL2-2.0.4";
+			sourceTree = "<group>";
+		};
+		DAE4C7FB56C84FA08EB10863 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				E6941B66FB8C496E8093A076 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL.h */,
+				A9237585114741D1A7398E51 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_assert.h */,
+				4075C9268E6040169B2CE3DA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_atomic.h */,
+				74417A65A7ED47E2915AF537 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_audio.h */,
+				AF181E59FBE34BEB9CCAAB9E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_bits.h */,
+				1E4D1424930B4D0D81B9BE40 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_blendmode.h */,
+				2A98C08908E6424B862924D4 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_clipboard.h */,
+				452D2D8065A844FBBBE2492B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config.h */,
+				5948A1AFAA5342FF957B8D4E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_android.h */,
+				04974F7E71374AF08760CA19 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_iphoneos.h */,
+				B0EECF6BC13A456491AD8F54 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_macosx.h */,
+				DFED492861D74A3C9D2A5C47 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_minimal.h */,
+				F98A22E5E7E74F269B09C50A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_pandora.h */,
+				C536BDC2439F4AE9B833D0C0 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_psp.h */,
+				B431956B2037413788BF5E3E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_windows.h */,
+				EEED54EF2F4E475BB46A7BD7 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_winrt.h */,
+				09B8CC2222944CF682C49D0B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_config_wiz.h */,
+				2097629C815D41139FF87269 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_copying.h */,
+				432C9DDD46434C7C93066CDA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_cpuinfo.h */,
+				90012B69811048E299BD2225 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_egl.h */,
+				146E7E094A73474BA54462D8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_endian.h */,
+				89C74240E9204065BE2D0E70 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_error.h */,
+				6EA19F1813404D089D057830 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_events.h */,
+				A6BD6AC2A59F443987ABF646 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_filesystem.h */,
+				4B7034D8FDE6478089D44385 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_gamecontroller.h */,
+				D84C681414E04D719549B8B6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_gesture.h */,
+				E1BC2B93C46448359627105E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_haptic.h */,
+				7F5E71CBC6E2460ABBB3DA45 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_hidapi.h */,
+				CF5980891A064BD690A4405C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_hints.h */,
+				8A281F3470E04DB597B2ACFF /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_image.h */,
+				6C0D37B3AA6944D295F07DA6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_joystick.h */,
+				0C4538B2F5FC47109E80EAD0 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_keyboard.h */,
+				4BD567716CE540CEA6B6DF98 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_keycode.h */,
+				9241F7A4D0A9495A91163687 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_loadso.h */,
+				0E812D44528A4B80A8197643 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_locale.h */,
+				46984C48A5624A9EA74B5853 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_log.h */,
+				0D3FA09FCBBD4F728A4A0F91 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_main.h */,
+				3DCD2B7472044E9FA23D1A45 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_messagebox.h */,
+				A1534498074B4323A91C7BCD /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_metal.h */,
+				E6F900E6ED6F44278C8BD446 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_misc.h */,
+				41DC2FB0D3BC43E493F1622D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_mouse.h */,
+				1794A3A926614901B2605667 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_mutex.h */,
+				DE32B5B577904F78B4C2ADBD /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_name.h */,
+				FF38CAB7E89F483EAD09BD8A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengl.h */,
+				F4134A3B936B460894BFDEC8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengl_glext.h */,
+				F397C5FBDDBF4F13AF952187 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles.h */,
+				8ADADA8A85AC41C190A31F55 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2.h */,
+				B6911051C3EB418392FBE57B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2.h */,
+				3661F4F02D474CE49E4C2D13 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2ext.h */,
+				FC27DBCDE39547F5A373E12F /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_gl2platform.h */,
+				35006EA306434CFEB7FF81DA /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_opengles2_khrplatform.h */,
+				D50602E40DFD48218080E2F9 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_pixels.h */,
+				188A6C332FB04063A86F3163 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_platform.h */,
+				2B100A6DE5E54A84846B16AE /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_power.h */,
+				3532C6E6E77045CC9E6975F6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_quit.h */,
+				8B33968831B542B8ADEBB8E4 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_rect.h */,
+				DE95B3DA576D444A87F17C9C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_render.h */,
+				8D09AAA8117743AC982BED06 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_revision.h */,
+				F2011851F61C402A96522C16 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_rwops.h */,
+				982B9BAA30AF4C3E8D25E3BF /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_scancode.h */,
+				55F3EF00ECCB4F34AEDA2BF3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_sensor.h */,
+				A7069D69825D4AF091289745 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_shape.h */,
+				4D9204D993224DFDA5C275AE /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_stdinc.h */,
+				102AD00149A143C2B34D9663 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_surface.h */,
+				4E01A80020074CA287D76F7A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_system.h */,
+				71D9DE05A0144EAC9ACA9F30 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_syswm.h */,
+				517170A7DA784636A74E222D /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test.h */,
+				BB677215F83E4B238FAF7694 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_assert.h */,
+				0F03BF1E0BF24D2F9984493C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_common.h */,
+				5E6040B8C993455E93CDF8C7 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_compare.h */,
+				CBB9D2ACD9FD431497FA5581 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_crc32.h */,
+				72EB6108525647289863CF98 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_font.h */,
+				D7197481F4F544FABE4A625A /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_fuzzer.h */,
+				7BA7BDB38C9942FD94D26F21 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_harness.h */,
+				E55BE5181E39494980F45B92 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_images.h */,
+				F251F0294CD7465E9C44A25C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_log.h */,
+				152EFEBE420543E4BB0CEBC3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_md5.h */,
+				B439BC18BA5645A3BAB3E4C8 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_memory.h */,
+				87E9E9D543674DFF89CD2803 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_test_random.h */,
+				FB8694D78F3C48478100447B /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_thread.h */,
+				46787427A48D49638FA3741C /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_timer.h */,
+				E14F1154B17245189A96A295 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_touch.h */,
+				E054B4D87B41445590BED1D6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_types.h */,
+				E8494ACFBBD84551B2D29CB2 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_version.h */,
+				4AB736958A434633BF0A10B3 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_video.h */,
+				B1D5C1B6897B4352951C5871 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/SDL_vulkan.h */,
+				DDFAF06464014B1BAE0607E6 /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/begin_code.h */,
+				D649433452F74712B9A9861E /* /Users/Code/GoodBoy/source/third_party/SDL2-2.0.4/include/close_code.h */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		F1DDEEEBB1F74F108A8C40BF /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				0578AF69C1D3471E83D872FF /* CMake Rules */,
+				93D823C1B0954ECC9AEC8B97 /* /Users/Code/GoodBoy/source/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5F401A2E2CD14D6AA7A7B158 /* GoodBoy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 779F7C7A51934AD18C242C84 /* Build configuration list for PBXNativeTarget "GoodBoy" */;
+			buildPhases = (
+				B0A3498B46704D9DA00402EB /* Sources */,
+				7DD93FE1F86D44D99108490A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1CBA13D850D54FE1B4629187 /* PBXTargetDependency */,
+			);
+			name = GoodBoy;
+			productName = GoodBoy;
+			productReference = C868DC90951D4F608D2763A3 /* GoodBoy */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		04848F05A73F48E49F33EB82 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1420;
+			};
+			buildConfigurationList = 7D00151FA2E94B3BBFA0C8CA /* Build configuration list for PBXProject "GoodBoy" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				382DED88B047411099BF487C /* Debug */,
+				61D691BC79214FD2BEDC0B08 /* Release */,
+				3758D863F0984A42891838E1 /* MinSizeRel */,
+				C270F6889B824501A1CD990D /* RelWithDebInfo */,
+			);
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = 0873AF6F2C6F4DAFA9567CB2;
+			projectDirPath = /Users/Code/GoodBoy/source;
+			projectRoot = "";
+			targets = (
+				FE9875934F514604B80F8FEE /* ALL_BUILD */,
+				5F401A2E2CD14D6AA7A7B158 /* GoodBoy */,
+				2BC754A5368641BD993A8B14 /* ZERO_CHECK */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		136F884815AA9A85AD06E292 /* Generate CMakeFiles/ALL_BUILD */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ALL_BUILD";
+			outputPaths = (
+/Users/Code/GoodBoy/project_files/CMakeFiles/ALL_BUILD			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/Code/GoodBoy/project_files
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/Code/GoodBoy/project_files
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/Code/GoodBoy/project_files
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/Code/GoodBoy/project_files
+  echo Build\\ all\\ projects
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		3C0110FC8322DE7E50886E21 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		6D1D3248BD604D6C4ED65E14 /* Generate CMakeFiles/ZERO_CHECK */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ZERO_CHECK";
+			outputPaths = (
+/Users/Code/GoodBoy/project_files/CMakeFiles/ZERO_CHECK			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/Code/GoodBoy/project_files
+  make -f /Users/Code/GoodBoy/project_files/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/Code/GoodBoy/project_files
+  make -f /Users/Code/GoodBoy/project_files/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/Code/GoodBoy/project_files
+  make -f /Users/Code/GoodBoy/project_files/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/Code/GoodBoy/project_files
+  make -f /Users/Code/GoodBoy/project_files/CMakeScripts/ReRunCMake.make
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		9B50530E35CC49C82C2FACCF = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B0A3498B46704D9DA00402EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09D421BB97014C24A480F30B /* /Users/Code/GoodBoy/source/GoodBoy/apu.cpp */,
+				450CEFF9041140B5A25B04D6 /* /Users/Code/GoodBoy/source/GoodBoy/cartridge.cpp */,
+				06EB43627572474B92E55C1A /* /Users/Code/GoodBoy/source/GoodBoy/cpu.cpp */,
+				033BCCEFF3814167935EA8EB /* /Users/Code/GoodBoy/source/GoodBoy/display.cpp */,
+				B936838F3ECD43C48D28E8C8 /* /Users/Code/GoodBoy/source/GoodBoy/joypad.cpp */,
+				6150685C7D754255908ECD34 /* /Users/Code/GoodBoy/source/GoodBoy/main.cpp */,
+				6A6753010BCE4911AC58B76E /* /Users/Code/GoodBoy/source/GoodBoy/memory.cpp */,
+				AB8C9155ABE54FED89007173 /* /Users/Code/GoodBoy/source/GoodBoy/system.cpp */,
+				ADC5715373B74BB6840C6168 /* /Users/Code/GoodBoy/source/GoodBoy/timer.cpp */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1CBA13D850D54FE1B4629187 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2BC754A5368641BD993A8B14 /* ZERO_CHECK */;
+			targetProxy = 20A6215D66AF486AA2582300 /* PBXContainerItemProxy */;
+		};
+		2807D7622D1F4B279446E88D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2BC754A5368641BD993A8B14 /* ZERO_CHECK */;
+			targetProxy = 7FFAB3E900E94EAF9D270E99 /* PBXContainerItemProxy */;
+		};
+		AC5953D380FF402BB217C64C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5F401A2E2CD14D6AA7A7B158 /* GoodBoy */;
+			targetProxy = 9212638E063946CDB63750B4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		02599A77841845D1BBBB1247 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		1B99DDB257444DBA84D9D0C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		2926E6D7F830454DA641CDE6 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = /Users/Code/GoodBoy/project_files/RelWithDebInfo;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/opt/homebrew/include/SDL2,"$(inherited)");
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = "       -DNDEBUG -Wall -Wextra -pedantic -Werror '-std=gnu++17' ";
+				OTHER_LDFLAGS = (" -Wl,-search_paths_first -Wl,-headerpad_max_install_names",/opt/homebrew/lib/libSDL2.dylib,"$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = GoodBoy;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/Code/GoodBoy/project_files/build/GoodBoy.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		3989A0E1B9554276A3FCD00E /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		3A67D8D68A1747C8B8BA0CE0 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = /Users/Code/GoodBoy/project_files/MinSizeRel;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/opt/homebrew/include/SDL2,"$(inherited)");
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG -Wall -Wextra -pedantic -Werror '-std=gnu++17' ";
+				OTHER_LDFLAGS = (" -Wl,-search_paths_first -Wl,-headerpad_max_install_names",/opt/homebrew/lib/libSDL2.dylib,"$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = GoodBoy;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/Code/GoodBoy/project_files/build/GoodBoy.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		40DF4C2DF5FB49B094EC5E8B /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.6;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk;
+				SYMROOT = /Users/Code/GoodBoy/project_files/build;
+			};
+			name = MinSizeRel;
+		};
+		4B7E6296A90041F483C63C3A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = /Users/Code/GoodBoy/project_files/Release;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/opt/homebrew/include/SDL2,"$(inherited)");
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG -Wall -Wextra -pedantic -Werror '-std=gnu++17' ";
+				OTHER_LDFLAGS = (" -Wl,-search_paths_first -Wl,-headerpad_max_install_names",/opt/homebrew/lib/libSDL2.dylib,"$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = GoodBoy;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/Code/GoodBoy/project_files/build/GoodBoy.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		60EBEF2541E9452399CE21A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		74B790E43E994885A5DC348D /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		75A8AFA0F136410C9EED180B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		7D5FC542198D4523BC55C8C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.6;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk;
+				SYMROOT = /Users/Code/GoodBoy/project_files/build;
+			};
+			name = Debug;
+		};
+		899647C7A4934546AD052E20 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		95267628D9514E0A920330E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.6;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk;
+				SYMROOT = /Users/Code/GoodBoy/project_files/build;
+			};
+			name = Release;
+		};
+		AF3B20E9142A4031BCF13D56 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		C404696CA3CC4626B1764A92 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.6;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk;
+				SYMROOT = /Users/Code/GoodBoy/project_files/build;
+			};
+			name = RelWithDebInfo;
+		};
+		F333EE477C474EBBBEAA21ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = /Users/Code/GoodBoy/project_files/Debug;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/opt/homebrew/include/SDL2,"$(inherited)");
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = "   -Wall -Wextra -pedantic -Werror '-std=gnu++17' ";
+				OTHER_LDFLAGS = (" -Wl,-search_paths_first -Wl,-headerpad_max_install_names",/opt/homebrew/lib/libSDL2.dylib,"$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = GoodBoy;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/Code/GoodBoy/project_files/build/GoodBoy.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		475F8645482349178BAAA427 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B99DDB257444DBA84D9D0C2 /* Debug */,
+				AF3B20E9142A4031BCF13D56 /* Release */,
+				02599A77841845D1BBBB1247 /* MinSizeRel */,
+				74B790E43E994885A5DC348D /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		753CEFF4F18949D4AE87ABEE /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60EBEF2541E9452399CE21A4 /* Debug */,
+				75A8AFA0F136410C9EED180B /* Release */,
+				899647C7A4934546AD052E20 /* MinSizeRel */,
+				3989A0E1B9554276A3FCD00E /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		779F7C7A51934AD18C242C84 /* Build configuration list for PBXNativeTarget "GoodBoy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F333EE477C474EBBBEAA21ED /* Debug */,
+				4B7E6296A90041F483C63C3A /* Release */,
+				3A67D8D68A1747C8B8BA0CE0 /* MinSizeRel */,
+				2926E6D7F830454DA641CDE6 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7D00151FA2E94B3BBFA0C8CA /* Build configuration list for PBXProject "GoodBoy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D5FC542198D4523BC55C8C7 /* Debug */,
+				95267628D9514E0A920330E9 /* Release */,
+				40DF4C2DF5FB49B094EC5E8B /* MinSizeRel */,
+				C404696CA3CC4626B1764A92 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 04848F05A73F48E49F33EB82 /* Project object */;
+}

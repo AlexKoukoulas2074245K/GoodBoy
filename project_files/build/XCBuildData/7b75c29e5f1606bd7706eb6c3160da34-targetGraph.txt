@@ -1,0 +1,7 @@
+Target dependency graph (3 targets)
+ZERO_CHECK in GoodBoy, no dependencies
+GoodBoy in GoodBoy, depends on:
+ZERO_CHECK in GoodBoy (explicit)
+ALL_BUILD in GoodBoy, depends on:
+GoodBoy in GoodBoy (explicit)
+ZERO_CHECK in GoodBoy (explicit)

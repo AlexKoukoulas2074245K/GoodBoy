@@ -1,0 +1,3 @@
+/Users/Code/GoodBoy/project_files/CMakeFiles/GoodBoy.dir
+/Users/Code/GoodBoy/project_files/CMakeFiles/ALL_BUILD.dir
+/Users/Code/GoodBoy/project_files/CMakeFiles/ZERO_CHECK.dir
